@@ -1,12 +1,13 @@
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class TaskManager {
-   static ArrayList<Task> allTasks = new ArrayList();
+  // public String taskType;
+  public static int id;
 
-
-// методы
-
+ // методы
     // 1. хранить задачи всех типов
+  public  static HashMap<Integer, Task> allTasks = new HashMap<>();
+
 
     // 2. Методы для каждого из типа задач(Задача/Эпик/Подзадача):
 
@@ -16,7 +17,34 @@ public class TaskManager {
 
             // c. Получение по идентификатору
 
-            // d. Создание. Сам объект должен передаваться в качестве параметра
+            //TODO d. Создание. Сам объект должен передаваться в качестве параметра
+    public static Task composeNewTask(String taskType, String name, String description, Progress status) {
+        Task task;
+        switch(taskType) {
+            case "Эпик":
+                task = new Epic(name, description, status);
+                break;
+            case "Подзадача":
+                task = new SubTask(name, description, status);
+                break;
+            case "Задача":
+            default:
+                task = new Task(name, description, status);
+                break;
+        }
+        return task;
+    }
+
+    public static void addNewTask(Task task) {
+        // int id = Task.getId() + 1;
+        allTasks.put(id, task);
+        id++;
+    }
+
+
+
+
+
 
             // e. Обновление. Новая версия объекта с верным идентификатором передаётся в виде параметра
 
