@@ -1,27 +1,30 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Epic extends Task {
-    static int epicId;
-    ArrayList<SubTask> subTasks = new ArrayList<>();
+    static int subTaskId;
+    // ArrayList<SubTask> subTasks = new ArrayList<>();
+    HashMap<Integer, SubTask> subTasks;
 
     public Epic(String name, String description, Progress progress) {
         super(name, description, progress);
+        subTasks = new HashMap<>();
     }
 
-    public void addNewSubTask(SubTask subTask) {
-        subTasks.add(subTask);
-        epicId++;
+    public void addSubTask(SubTask subTask) {
+
+        subTasks.put(subTaskId, subTask);
+        subTaskId ++;
     }
+
     @Override
     public String toString() {
-        return "Epic{" +
-                /*"subTasks=" + subTasks +*/
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", progress=" + progress +
-                '}';
+        return "Эпик: {" +
+                "имя эпика: '" + name + '\'' +
+                ", описание: '" + description + '\'' +
+                ", статус: " + progress +
+                '}' + "Текущие подзадачи: " + subTasks;
     }
-   /* public Epic() {
-        // эпик с подзадачами
-    }*/
+
+
 }

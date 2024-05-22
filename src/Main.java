@@ -3,37 +3,48 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Поехали!");
 
-        String taskType = "Задача";
+        String taskType = "Эпик";
         String name = "поесть";
         String description = "поесть вкусное что-нибудь";
         String progress = String.valueOf(Progress.IN_PROGRESS);
+        Progress status = Progress.IN_PROGRESS;
+        String epicName = "подзача1";
 
-        Task task = TaskManager.composeNewTask(taskType, name, description, Progress.IN_PROGRESS);
-        TaskManager.addNewTask(task);
 
-        taskType = "Эпик";
-        name = "имя";
-        description = "описание";
-        progress = String.valueOf(Progress.NEW);
 
-        Task task1 = TaskManager.composeNewTask(taskType, name, description, Progress.NEW);
-        TaskManager.addNewTask(task1);
-        task1 = (Epic) task1;
+        Task task;
 
-        taskType = "Подзадача";
-        name = "имя1";
-        description = "описание1";
-        progress = String.valueOf(Progress.NEW);
-        Task task2 = TaskManager.composeNewTask(taskType, name, description, Progress.NEW);
+        switch(taskType) {
+            case "Подзадача":
+                task= new SubTask(epicName, name, description, status);
+                TaskManager.addNewSubTask((SubTask) task);
+                break;
+            case "Задача":
+                task = new Task(name, description, status);
+                TaskManager.addNewTaskOrEpic(task);
+                break;
+            case "Эпик":
+            default:
+                task = new Epic(name, description, status);
+                TaskManager.addNewTaskOrEpic(task);
+                break;
+        }
 
-        ((Epic) task1).addNewSubTask((SubTask) task2);
+        Task task1 = new Task("задача1", "поесть",  Progress.DONE);
+        Task task2 = new Epic("эпик1", "поработать", Progress.DONE);
+        Task task3 = new SubTask("эпик1", "Подзадача1", "Поработать", Progress.DONE);
+
+        TaskManager.addNewTaskOrEpic(task1);
+        TaskManager.addNewTaskOrEpic(task2);
+        TaskManager.addNewSubTask((SubTask) task3);
+
+        Task task4 = new SubTask("эпик1", "Подзадача2", "Поработать2", Progress.DONE);
+        TaskManager.addNewSubTask((SubTask) task4);
 
         System.out.println(TaskManager.allTasks);
-        System.out.println(((Epic) task1).subTasks);
-        // System.out.println(task1.getClass());
-        task2.setProgress(Progress.DONE);
+        System.out.println(((Epic) task2).subTasks);
 
-        System.out.println(((Epic) task1).subTasks);
+        TaskManager.printAllTasks();
 
 
 

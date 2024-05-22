@@ -1,52 +1,65 @@
 import java.util.HashMap;
 
 public class TaskManager {
-  // public String taskType;
-  public static int id;
-
  // методы
     // 1. хранить задачи всех типов
-  public  static HashMap<Integer, Task> allTasks = new HashMap<>();
+  public static HashMap<Integer, Task> allTasks = new HashMap<>();
 
 
     // 2. Методы для каждого из типа задач(Задача/Эпик/Подзадача):
 
             //  a. Получение списка всех задач
+        public static void printAllTasks() {
+            int i = 1;
+            for (Task task : allTasks.values()) {
+                System.out.printf(i++ + ". " + task.getName() + "\n");
+            }
+        }
+        public static void printAllSubTask() {
+            String result = "";
+           // for()
+        }
 
             // b. Удаление всех задач
 
             // c. Получение по идентификатору
 
             //TODO d. Создание. Сам объект должен передаваться в качестве параметра
-    public static Task composeNewTask(String taskType, String name, String description, Progress status) {
-        Task task;
-        switch(taskType) {
-            case "Эпик":
-                task = new Epic(name, description, status);
-                break;
-            case "Подзадача":
-                task = new SubTask(name, description, status);
-                break;
-            case "Задача":
-            default:
-                task = new Task(name, description, status);
-                break;
+    public static void addNewTaskOrEpic(Task task) {
+        allTasks.put(task.getId(), task);
+    }
+    public static void addNewSubTask(SubTask subTask) {
+        for(Task task : allTasks.values()) {
+            if(task.getId()==subTask.getId()) {
+                Epic epic = (Epic) task;
+                epic.addSubTask(subTask);
+            }
         }
-        return task;
     }
 
-    public static void addNewTask(Task task) {
-        // int id = Task.getId() + 1;
-        allTasks.put(id, task);
-        id++;
+    public static void updateTask(Task task) {
+        addNewTaskOrEpic(task);
     }
 
+    public static void updateSubTask(SubTask subTask) {
+        addNewSubTask(subTask);
+
+    }
+
+    @Override
+    public String toString() {
+
+            for (Task task : allTasks.values()) {
+                System.out.printf("Задача" + task.getName());
+            }
+        return "TaskManager{}";
+    }
+
+    // e. Обновление. Новая версия объекта с верным идентификатором передаётся в виде параметра
+                    // в Main можно создать метод, который запрашивает у пользователя все данные о задаче, и сюда тоже его вставить
 
 
 
-
-
-            // e. Обновление. Новая версия объекта с верным идентификатором передаётся в виде параметра
 
             //  f. Удаление по идентификатору
 

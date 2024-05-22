@@ -1,20 +1,34 @@
+import java.util.Objects;
+
 public class SubTask extends Task{
 
-    Epic newEpic;
+    String epicName;
+    int epicId;
 
-    public SubTask(String name, String description, Progress progress/*, Epic newEpic*/) {
+    public SubTask(String epicName, String name, String description, Progress progress) {
         super(name, description, progress);
-        // this.newEpic = newEpic;
+        this.epicName = epicName;
     }
 
 
     @Override
+    public int getId() {
+        epicId = Objects.hash(this.epicName);
+        return epicId;
+    }
+
+    @Override
     public String toString() {
-        return "SubTask{" +
-                /*"newEpic=" + newEpic +*/
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", progress=" + progress +
-                '}';
+
+/*        return "Эпик: " + (this.getId()) + "Подзадача: {" +
+                "Имя подзадачи:'" + name + '\'' +
+                ", описание: " + description + '\'' +
+                ", статус: " + progress +
+                '}';*/
+
+
+        return "Эпик: " + (this.epicName) + ". Имя подзадачи:'" + name + '\'' +
+                ", описание: " + description + '\'' +
+                ", статус: " + progress;
     }
 }

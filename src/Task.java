@@ -15,7 +15,9 @@ public class Task {
         this.progress = progress;
     }
 
-    public static int getId() {
+
+    public int getId() {
+        id = Objects.hash(this.name);
         return id;
     }
 
@@ -57,15 +59,15 @@ public class Task {
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, description);
+        return Objects.hash(name);
     }
 
     @Override
     public String toString() {
-        return "Task{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", progress=" + progress +
+        return "Задача: {" +
+                "Имя задачи: '" + name + '\'' +
+                ", описание задачи: '" + description + '\'' +
+                ", текущий статус задачи: " + progress +
                 '}';
     }
 }
