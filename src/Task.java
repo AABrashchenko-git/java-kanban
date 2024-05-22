@@ -3,7 +3,10 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class Task {
+   String taskType;
     public static int id;
+
+
     protected String name;
     protected String description;
 
@@ -13,6 +16,7 @@ public class Task {
         this.name = name;
         this.description = description;
         this.progress = progress;
+        taskType = "task";
     }
 
 
