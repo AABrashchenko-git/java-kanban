@@ -8,9 +8,19 @@ public class Epic extends Task {
     HashMap<Integer, SubTask> subTasks;
 
     public Epic(String name, String description, Progress progress) {
+
         super(name, description, progress);
         subTasks = new HashMap<>();
         taskType = "epic";
+    }
+
+    public Epic(String name, String description) {
+
+        super(name, description);
+        progress = Progress.NEW; //TODO ИСПРАВИТЬ
+        subTasks = new HashMap<>();
+        taskType = "epic";
+
     }
 
     public void addSubTask(SubTask subTask) {

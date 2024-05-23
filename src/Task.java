@@ -18,6 +18,12 @@ public class Task {
         this.progress = progress;
         taskType = "task";
     }
+    public Task(String name, String description) {
+        this.name = name;
+        this.description = description;
+        this.progress = Progress.NEW;
+        this.taskType = "task";
+    }
 
 
     public int getId() {

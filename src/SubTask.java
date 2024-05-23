@@ -10,7 +10,12 @@ public class SubTask extends Task{
         this.epicName = epicName;
         taskType = "subTask";
     }
-
+    public SubTask(String epicName, String name, String description) {
+        super(name, description);
+        this.progress = Progress.NEW; //TODO ИСПРАВИТЬ
+        this.epicName = epicName;
+        taskType = "subTask";
+    }
 
     @Override
     public int getId() {
