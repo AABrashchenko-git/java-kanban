@@ -3,7 +3,7 @@ import java.util.HashMap;
 
 public class Epic extends Task {
     // String taskType = "epic";
-    static int subTaskId;
+
     // ArrayList<SubTask> subTasks = new ArrayList<>();
     HashMap<Integer, SubTask> subTasks;
 
@@ -24,24 +24,21 @@ public class Epic extends Task {
     }
 
     public void addSubTask(SubTask subTask) {
-
-        subTasks.put(subTaskId, subTask);
-        subTaskId ++;
+        subTasks.put(subTask.getSubTaskId(), subTask);
     }
 
     @Override
     public String toString() {
         int i = 1;
         String result = "";
-        for(SubTask subTask : subTasks.values()) {
-           result = result + "\n" + i + ". " + subTask.name + ". Описание: " + subTask.description + ". Статус: " + subTask.getProgress() + ";";
-           i++;
+        for (SubTask subTask : subTasks.values()) {
+            result = result + "\n" + i + ". " + subTask.name + ". Описание: " + subTask.description + ". Статус: " + subTask.getProgress() + ";";
+            i++;
         }
 
 
-
         return "Имя эпика: '" + name + '\'' +
-                 ". Текущие подзадачи: " + result;
+                ". Текущие подзадачи: " + result;
 
 
     }

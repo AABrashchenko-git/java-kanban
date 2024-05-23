@@ -1,7 +1,8 @@
 import java.util.Objects;
 
-public class SubTask extends Task{
-   // String taskType = "subTask";
+public class SubTask extends Task {
+    // String taskType = "subTask";
+    int subTaskId;
     String epicName;
     int epicId;
 
@@ -10,6 +11,7 @@ public class SubTask extends Task{
         this.epicName = epicName;
         taskType = "subTask";
     }
+
     public SubTask(String epicName, String name, String description) {
         super(name, description);
         this.progress = Progress.NEW; //TODO ИСПРАВИТЬ
@@ -21,6 +23,16 @@ public class SubTask extends Task{
     public int getId() {
         epicId = Objects.hash(this.epicName);
         return epicId;
+    }
+
+    public int getEpicId() {
+        epicId = Objects.hash(this.epicName);
+        return epicId;
+    }
+
+    public int getSubTaskId() {
+        subTaskId = Objects.hash(this.name);
+        return subTaskId;
     }
 
     @Override
