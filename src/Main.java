@@ -1,3 +1,4 @@
+import java.sql.SQLOutput;
 import java.util.Scanner;
 import java.util.TreeSet;
 
@@ -13,12 +14,19 @@ public class Main {
 
         Epic epic1 = new Epic("Эпик1", "поработать");
         Epic epic2 = new Epic("Эпик2", "поработать");
+        Epic epic3 = new Epic("Эпик3", "поработать");
 
         SubTask subTask1 = new SubTask("Эпик1", "Подзадача1", "Поработать1");
         SubTask subTask2 = new SubTask("Эпик1", "Подзадача2", "Поработать2");
         SubTask subTask3 = new SubTask("Эпик1", "Подзадача3", "Поработать3");
         SubTask subTask4 = new SubTask("Эпик1", "Подзадача4", "Поработать4");
+
+
         SubTask subTask01 = new SubTask("Эпик2", "Подзадача01", "Поработать01");
+        SubTask subTask02= new SubTask("Эпик2", "Подзадача02", "Поработать02");
+        SubTask subTask03 = new SubTask("Эпик2", "Подзадача03", "Поработать03");
+        SubTask subTask04 = new SubTask("Эпик2", "Подзадача04", "Поработать04");
+
 
 
         TaskManager.addNewTask(task1);
@@ -27,43 +35,79 @@ public class Main {
 
         TaskManager.addNewEpic(epic1);
         TaskManager.addNewEpic(epic2);
+        TaskManager.addNewEpic(epic3);
+
 
         TaskManager.addNewSubTask(subTask1);
         TaskManager.addNewSubTask(subTask2);
         TaskManager.addNewSubTask(subTask3);
         TaskManager.addNewSubTask(subTask4);
+
+
         TaskManager.addNewSubTask(subTask01);
+        TaskManager.addNewSubTask(subTask02);
+        TaskManager.addNewSubTask(subTask03);
+        TaskManager.addNewSubTask(subTask04);
 
 
         TaskManager.printAllTasks();
         TaskManager.printAllEpics();
         TaskManager.printAllSubTask("Эпик1");
+        TaskManager.printAllSubTask("Эпик2");
+        System.out.println("...........");
+        TaskManager.removeOneEpic("Эпик22");
+        TaskManager.printAllEpics();
+        System.out.println("...........");
+        TaskManager.printAllTasks();
+        TaskManager.removeOneTask("Задаvча1");
+        System.out.println("...........");
+
+        TaskManager.printAllTasks();
+        System.out.println("...........");
+        System.out.println("Подзадачи перед удалением:");
+        TaskManager.printAllSubTask("Эпик2");
+        TaskManager.removeOneSubTaskOfEpic("Подзадача01", "Эпик2");
+        System.out.println("Подзадачи после удаления:");
+        TaskManager.printAllSubTask("Эпик2");
 
 
-       // System.out.println(epic1.getProgress());
+        System.out.println("Текущие epics");
+        TaskManager.printAllEpics();
+        System.out.println("Текущие сабтаски эпика1");
+        TaskManager.printAllSubTask("Эпик1");
+        System.out.println("удаляем сабтаски эпика1");
+        // TaskManager.removeSubTasksOfEpic("Эпик1");
+        System.out.println("Текущие сабтаски эпика1");
+        TaskManager.printAllSubTask("Эпик1");
 
-        TaskManager.updateSubTaskStatus("Подзадача1", "Эпик1", Progress.NEW);
-        TaskManager.updateSubTaskStatus("Подзадача2", "Эпик1", Progress.NEW);
-        TaskManager.updateSubTaskStatus("Подзадача3", "Эпик1", Progress.NEW);
+
+        System.out.println(TaskManager.allTasks);
+        task1 = new Task("Задача1", "поесть111");
+        TaskManager.updateTask(task1, Progress.IN_PROGRESS);
+
+        System.out.println(TaskManager.allTasks);
+
+
+        System.out.println("Текущие epics");
+        TaskManager.printAllEpics();
+        TaskManager.printAllSubTask("Эпик1");
+
+        epic1 = new Epic("Эпик1", "п1оработать");
+        // TaskManager.updateEpic(epic1);
+        TaskManager.printAllSubTask("Эпик1");
+/*        TaskManager.updateSubTask(subTask1, Progress.DONE);
+        TaskManager.updateSubTask(subTask2, Progress.DONE);
+        TaskManager.updateSubTask(subTask3, Progress.DONE);*/
+        System.out.println("Начинаем менять статусу задач: ");
+        TaskManager.updateSubTaskStatus("Подзадача1", "Эпик1", Progress.DONE);
+        TaskManager.updateSubTaskStatus("Подзадача2", "Эпик1", Progress.DONE);
+        TaskManager.updateSubTaskStatus("Подзадача3", "Эпик1", Progress.IN_PROGRESS);
         TaskManager.updateSubTaskStatus("Подзадача4", "Эпик1", Progress.DONE);
-
-
         TaskManager.printAllSubTask("Эпик1");
 
-        System.out.println(epic1.getProgress());
+       System.out.println(epic2.progress);
 
-
-
-        System.out.println("..........................");
-        TaskManager.printAllSubTask("Эпик1");
-
-
-        TaskManager.removeSubTaskOfEpic("Подзадача1", "Эпик1");
-        TaskManager.printAllSubTask("Эпик1");
-        TaskManager.removeSubTaskOfEpic("Подзeадача2", "Эпик1");
-        TaskManager.printAllSubTask("Эпик1");
-        System.out.println();
-        System.out.println(TaskManager.getTaskById("Эпик 1"));
+       TaskManager.printAllEpics();
 
 
 
@@ -71,7 +115,13 @@ public class Main {
 
 
 
-        while (true) {
+
+
+
+
+
+
+        /* while (true) {
             printMenu();
             String command = scanner.nextLine();
 
@@ -96,7 +146,7 @@ public class Main {
                 default:
                     return;
             }
-        }
+        }*/
 
 
 

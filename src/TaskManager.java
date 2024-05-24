@@ -2,6 +2,7 @@ import java.util.*;
 
 public class TaskManager {
     public static HashMap<Integer, Task> allTasks = new HashMap<>();
+    public static HashMap<Integer, Epic> allEpics = new HashMap<>();
 
     // 1. Создание задачи (добавление в список). Сам объект передается в качестве параметра
     // Добавление  задачи
@@ -11,14 +12,14 @@ public class TaskManager {
 
     //  Добавление  эпика
     public static void addNewEpic(Epic epic) {
-        allTasks.put(epic.getId(), epic);
+        allEpics.put(epic.getId(), epic);
     }
 
     //  Добавление  подзадачи (сама подзадача при создании уже содержит информацию о эпике, которому она принадлежит)
     public static void addNewSubTask(SubTask subTask) {
-        for (Task task : allTasks.values()) {
-            if (task.getId() == subTask.getEpicId()) {
-                Epic epic = (Epic) task;
+        for (Epic epic: allEpics.values()) {
+            if (epic.getId() == subTask.getEpicId()) {
+               // Epic epic = (Epic) task;
                 epic.addSubTask(subTask);
             }
         }
@@ -30,34 +31,34 @@ public class TaskManager {
     public static void printAllTasks() {
         int i = 1;
         for (Task task : allTasks.values()) {
-            if (task.taskType.equals("task")) {
                 System.out.printf(i++ + ". " + task.getName() + "\n");
-            }
         }
     }
 
     //  Получение списка всех эпиков
     public static void printAllEpics() {
         int i = 1;
-        for (Task task : allTasks.values()) {
-            if (task.taskType.equals("epic")) {
-                System.out.printf(i++ + ". " + task.getName() + "\n");
-            }
+        for (Epic epic : allEpics.values()) {
+            System.out.printf(i++ + ". " + epic.getName() + ". Статус эпика: " + epic.getProgress() + "\n");
+
         }
     }
 
     //  Получение списка всех подзадач конкретного эпика
     public static void printAllSubTask(String epicName) {
-        for (Task task : allTasks.values()) {
-            if (task.hashCode() == Objects.hash(epicName)) {
-                System.out.println(task);
+       //TODO проверить, существует ли?
+
+        for (Epic epic : allEpics.values()) {
+            if (epic.hashCode() == Objects.hash(epicName)) {
+                System.out.println(epic);
             }
         }
     }
 
     // 3. Удаление всех задач разного типа
     // Удаление только "задач"
-    public static void removeOnlyTasks() {
+    public static void removeTasks() {
+        /*
         HashMap<Integer, Task> epicsWithoutTasks = new HashMap<>();
         for (Task task : allTasks.values()) {
             if (task.taskType.equals("epic")) {
@@ -65,22 +66,28 @@ public class TaskManager {
             }
         }
         allTasks = epicsWithoutTasks;
+
+         */
+       allTasks.clear();
+
     }
 
     // Удаление только "эпиков"
-    public static void removeOnlyEpics() {
-        HashMap<Integer, Task> tasksWithoutEpics = new HashMap<>();
+    public static void removeEpics() {
+/*        HashMap<Integer, Task> tasksWithoutEpics = new HashMap<>();
         for (Task task : allTasks.values()) {
             if (task.taskType.equals("task")) {
                 tasksWithoutEpics.put(task.getId(), task);
             }
         }
-        allTasks = tasksWithoutEpics;
+        allTasks = tasksWithoutEpics;*/
+        allEpics.clear();
+
     }
 
     // Удаление всех подзадач конкретного эпика
-    public static void removeSubTasksOfEpic(String taskName) {
-        Epic taskToRemove = (Epic) getTaskById(taskName);
+    public static void removeSubTasksOfEpic(String epicName) {
+        Epic taskToRemove = getEpicById(epicName);
         if (!checkIfInputTaskExists(taskToRemove)) {
             System.out.println("Задача не найдена!");
             return;
@@ -89,19 +96,39 @@ public class TaskManager {
     }
 
     // Удаление одной конкретной задачи конкретного эпика
-    public static void removeSubTaskOfEpic(String subTaskName, String epicName) {
-        Epic epic = (Epic) getTaskById(epicName);
-        if (!checkIfInputTaskExists(epic)) {
-            System.out.println("Задача не найдена!");
+    public static void removeOneSubTaskOfEpic(String subTaskName, String epicName) {
+        Epic epic = getEpicById(epicName);
+        if (!checkIfInputEpicExists(epic)) {
+            System.out.println("Эпик не найден!");
             return;
         }
         SubTask subTask = getSubTaskById(subTaskName, epicName);
         if (!checkIfInputTaskExists(subTask)) {
-            System.out.println("Задача не найдена!");
+            System.out.println("Подзадача не найдена!");
             return;
         }
         epic.subTasks.remove(subTask.getSubTaskId(), subTask);
     }
+        // Удаление одного эпика
+    public static void removeOneEpic(String epicName) {
+        Epic epic = getEpicById(epicName);
+        if (!checkIfInputEpicExists(epic)) {
+            System.out.println("Эпик не найден!");
+            return;
+        }
+        allEpics.remove(epic.getId(), epic);
+
+    }
+        // Удаление одного задания
+        public static void removeOneTask(String taskName) {
+            Task task = getTaskById(taskName);
+            if (!checkIfInputTaskExists(task)) {
+                System.out.println("Эпик не найден!");
+                return;
+            }
+            allTasks.remove(task.getId(), task);
+        }
+
 
     // 4. Получение разного типа задач по идентификатору
     // Получение конкретной задачи или эпика по имени, введенным пользователем
@@ -115,10 +142,21 @@ public class TaskManager {
         }
         return neededTask;
     }
+    // Получение конкретного эпика по имени, введенным пользователем
+    public static Epic getEpicById(String taskName) {
+        Epic neededEpic = null;
+        for (Epic epic : allEpics.values()) {
+            if (epic.hashCode() == Objects.hash(taskName)) {
+                neededEpic = epic;
+                break;
+            }
+        }
+        return neededEpic;
+    }
 
     // Получение конкретной подзадачи по имени и по эпику, которому она принадлежит(вводятся пользователем)
     public static SubTask getSubTaskById(String taskName, String epicName) {
-        Epic epic = (Epic) getTaskById(epicName);
+        Epic epic = getEpicById(epicName);
         SubTask neededSubTask = null;
         for (SubTask subTask : epic.subTasks.values()) {
             if (subTask.name.equals(taskName)) {
@@ -137,7 +175,9 @@ public class TaskManager {
     }
 
     // Обновление эпика
+    //TODO нужен ли этот метод?
     public static void updateEpic(Epic epic /*, Progress progress */) {
+
         addNewEpic(epic);
         // epic.setProgress(progress);
     }
@@ -151,7 +191,7 @@ public class TaskManager {
     // 6. Обновление статуса задач
     // Обновление статуса эпика, используется только методом updateSubTaskStatus() при обновлении статуса подзадачи
     // Получается, что это что-то вроде вспомогательного метода, отдельно не используется
-    public static Progress getEpicProgress(Epic epic) {
+    public static Progress updateEpicProgress(Epic epic) {
         boolean isNew = true;
         boolean isDone = true;
 
@@ -162,30 +202,39 @@ public class TaskManager {
                 isDone = false;
             }
         }
+
+        System.out.println("isnew? " + isNew);
+        System.out.println("isDone? " + isDone);
         if (isNew || (epic.subTasks.size() == 0)) {
-            epic.progress = Progress.NEW;
+            epic.setProgress(Progress.NEW);
+            System.out.println("Установили НОВЫЙ");
         } else if (isDone) {
             epic.progress = Progress.DONE;
+            System.out.println("Установили СДЕЛАН");
         } else {
-            epic.progress = Progress.IN_PROGRESS;
+            epic.setProgress(Progress.IN_PROGRESS);
+            System.out.println("Установили В ПРОГРЕССЕ");
         }
+
         return epic.progress;
     }
 
     // Обновление статуса подзадачи. В конце вызывает метод getEpicProgress(), чтобы обновить статус всего эпика
-    public static void updateSubTaskStatus(String taskName, String epicName, Progress progress) {
-        SubTask subTask = getSubTaskById(taskName, epicName);
+    public static void updateSubTaskStatus(String subTaskName, String epicName, Progress progress) {
+        SubTask subTask = getSubTaskById(subTaskName, epicName);
         if (!checkIfInputTaskExists(subTask)) {
-            System.out.println("Задача не найдена!");
+            System.out.println("Подадача не найдена!");
             return;
         }
         subTask.setProgress(progress);
-        Epic epic = (Epic) getTaskById(epicName);
+        Epic epic = getEpicById(epicName);
         if (!checkIfInputTaskExists(epic)) {
-            System.out.println("Задача не найдена!");
+            System.out.println("Эпик не найден!");
             return;
         }
-        getEpicProgress(epic);
+
+        updateEpicProgress(epic);
+
 
     }
 
@@ -209,6 +258,13 @@ public class TaskManager {
         //Проверка, что вводимая пользователем задача (при обновлении, например) действительно существует
     public static boolean checkIfInputTaskExists(Task task) {
         if (task == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+    public static boolean checkIfInputEpicExists(Epic epic) {
+        if (epic == null) {
             return false;
         } else {
             return true;

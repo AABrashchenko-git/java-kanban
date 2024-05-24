@@ -17,7 +17,7 @@ public class Epic extends Task {
     public Epic(String name, String description) {
 
         super(name, description);
-        progress = Progress.NEW; //TODO ИСПРАВИТЬ
+        // progress = Progress.NEW; //TODO ИСПРАВИТЬ
         subTasks = new HashMap<>();
         taskType = "epic";
 
@@ -37,7 +37,7 @@ public class Epic extends Task {
         }
 
 
-        return "Имя эпика: '" + name + '\'' +
+        return "Имя эпика: '" + name + ". Описание: " + description +'\'' +
                 ". Текущие подзадачи: " + result;
 
 
