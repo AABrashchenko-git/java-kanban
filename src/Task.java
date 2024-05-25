@@ -1,16 +1,15 @@
 import java.util.Objects;
 
 public class Task {
-    protected static int id;
-    protected String name;
-    protected String description;
-    protected Progress progress;
+    private static int id;
+    private String name;
+    private String description;
+    private Progress progress;
 
     public Task(String name, String description) {
         this.name = name;
         this.description = description;
         this.progress = Progress.NEW;
-
     }
     public int getId() {
         id = Objects.hash(this.name);

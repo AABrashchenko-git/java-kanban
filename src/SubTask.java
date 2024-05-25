@@ -7,7 +7,7 @@ public class SubTask extends Task {
 
     public SubTask(String epicName, String name, String description) {
         super(name, description);
-        this.progress = Progress.NEW;
+        this.setProgress(Progress.NEW);
         this.epicName = epicName;
     }
 
@@ -17,14 +17,14 @@ public class SubTask extends Task {
     }
 
     public int getSubTaskId() {
-        subTaskId = Objects.hash(this.name);
+        subTaskId = Objects.hash(this.getName());
         return subTaskId;
     }
 
     @Override
     public String toString() {
-        return "Эпик: " + (this.epicName) + ". Имя подзадачи:'" + name + '\'' +
-                ", описание: " + description + '\'' +
-                ", статус: " + progress;
+        return "Эпик: " + (this.epicName) + ". Имя подзадачи:'" + this.getName() + '\'' +
+                ", описание: " + this.getDescription() + '\'' +
+                ", статус: " + this.getProgress();
     }
 }

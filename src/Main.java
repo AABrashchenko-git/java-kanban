@@ -1,4 +1,3 @@
-
 import java.util.Scanner;
 
 public class Main {
@@ -6,44 +5,6 @@ public class Main {
 
     public static void main(String[] args) {
         System.out.println("Поехали!");
-
-        Task task1 = new Task("Задача1", "поесть");
-        Task task2 = new Task("Задача2", "сходить в туалет");
-        Task task3 = new Task("Задача3", "посмотреть мемы");
-
-        Epic epic1 = new Epic("Эпик1", "поработать1");
-        Epic epic2 = new Epic("Эпик2", "поработать2");
-        Epic epic3 = new Epic("Эпик3", "поработать3");
-
-        SubTask subTask11 = new SubTask("Эпик1", "Подзадача1", "Поработать1");
-        SubTask subTask12 = new SubTask("Эпик1", "Подзадача2", "Поработать2");
-        SubTask subTask13 = new SubTask("Эпик1", "Подзадача3", "Поработать3");
-        SubTask subTask14 = new SubTask("Эпик1", "Подзадача4", "Поработать4");
-
-        SubTask subTask21 = new SubTask("Эпик2", "Подзадача01", "Поработать01");
-        SubTask subTask22 = new SubTask("Эпик2", "Подзадача02", "Поработать02");
-        SubTask subTask23 = new SubTask("Эпик2", "Подзадача03", "Поработать03");
-        SubTask subTask24 = new SubTask("Эпик2", "Подзадача04", "Поработать04");
-
-        // Добавление всех типов задач
-        // Добавление задач
-        TaskManager.addNewTask(task1);
-        TaskManager.addNewTask(task2);
-        TaskManager.addNewTask(task3);
-        // Добавление эпиков
-        TaskManager.addNewEpic(epic1);
-        TaskManager.addNewEpic(epic2);
-        TaskManager.addNewEpic(epic3);
-        // Добавление подзадач
-        TaskManager.addNewSubTask(subTask11);
-        TaskManager.addNewSubTask(subTask12);
-        TaskManager.addNewSubTask(subTask13);
-        TaskManager.addNewSubTask(subTask14);
-
-        TaskManager.addNewSubTask(subTask21);
-        TaskManager.addNewSubTask(subTask22);
-        TaskManager.addNewSubTask(subTask23);
-        TaskManager.addNewSubTask(subTask24);
 
         while (true) {
             printMenu();
@@ -79,8 +40,8 @@ public class Main {
         System.out.println("Выберите тип операций с задачами:");
         System.out.println("1. Создание(обновление) задачи (с добавлением в список)");
         System.out.println("2. Получение списка каждого типа задач");
-        System.out.println("3. Удаление всех задач разного типа");
-        System.out.println("4. Получение разного типа задач по идентификатору");
+        System.out.println("3. Удаление задач разного типа (всех и по отдельности)");
+        System.out.println("4. Получение разного типа задач по идентификатору (имя, описание, статус)");
         System.out.println("5. Обновление статуса задачи, подзадачи конкретного эпика");
         System.out.println("6. Выход");
     }
@@ -113,6 +74,10 @@ public class Main {
                 System.out.println("Введите название эпика для выбранной подзадачи");
                 String epicName = scanner.nextLine();
                 SubTask subTask = new SubTask(epicName, name, description);
+                if(!TaskManager.checkIfInputTaskExists(TaskManager.getEpicById(epicName))) {
+                    System.out.println("Эпик не найден!");
+                    break;
+                }
                 TaskManager.addNewSubTask(subTask);
                 break;
             default:
@@ -146,16 +111,17 @@ public class Main {
                 System.out.println("Команда не найдена!");
                 break;
         }
-
     }
 
     private static void manageOptionThree() {
         System.out.println("-".repeat(20));
-        System.out.println("3. Удаление всех задач разного типа");
-        System.out.println("    1) Удаление задач");
-        System.out.println("    2) Удаление эпиков");
+        System.out.println("3. Удаление задач разного типа (всех и по отдельности)");
+        System.out.println("    1) Удаление всех задач");
+        System.out.println("    2) Удаление всех эпиков");
         System.out.println("    3) Удаление всех подзадач конкретного эпика");
         System.out.println("    4) Удаление одной конкретной подзадачи конкретного эпика");
+        System.out.println("    5) Удаление одного эпика");
+        System.out.println("    6) Удаление одной задачи");
 
         String command = scanner.nextLine();
 
@@ -178,6 +144,16 @@ public class Main {
                 String subTaskName = scanner.nextLine();
                 TaskManager.removeOneSubTaskOfEpic(subTaskName, newEpicName);
                 break;
+            case "5":
+                System.out.println("Введите название эпика:");
+                String epicToRemove = scanner.nextLine();
+                TaskManager.removeOneEpic(epicToRemove);
+                break;
+            case "6":
+                System.out.println("Введите название задачи:");
+                String taskToRemove = scanner.nextLine();
+                TaskManager.removeOneTask(taskToRemove);
+                break;
             default:
                 System.out.println("Команда не найдена!");
                 break;
@@ -186,7 +162,7 @@ public class Main {
 
     private static void manageOptionFour() {
         System.out.println("-".repeat(20));
-        System.out.println("4. Получение разного типа задач по идентификатору");
+        System.out.println("4. Получение разного типа задач по идентификатору (имя, описание, статус)");
         System.out.println("    1) Получение конкретной задачи по имени");
         System.out.println("    2) Получение конкретного эпика по имени");
         System.out.println("    3) Получение конкретной подзадачи по имени и по эпику");
@@ -211,6 +187,11 @@ public class Main {
                 String newEpicName = scanner.nextLine();
                 System.out.println("Введите название подзадачи:");
                 String subTaskName = scanner.nextLine();
+                if(!TaskManager.checkIfInputTaskExists(TaskManager.getEpicById(newEpicName))) {
+                    System.out.println("Эпик не найден!");
+                    break;
+                }
+
                 SubTask subTaskFound = TaskManager.getSubTaskById(subTaskName, newEpicName);
                 System.out.println(subTaskFound);
                 break;
@@ -223,8 +204,7 @@ public class Main {
     private static void manageOptionFive() {
         System.out.println("-".repeat(20));
         System.out.println("5. Обновление статуса задачи, подзадачи конкретного эпика");
-
-        System.out.println("Введите номер нового статуса у задачи:");
+        System.out.println("Введите номер нового статуса, на который вы хотите обновить текущий статус задачи:");
         System.out.println("1 - NEW");
         System.out.println("2 - IN_PROGRESS");
         System.out.println("3 - DONE");
@@ -232,7 +212,7 @@ public class Main {
         String progressName = scanner.nextLine();
         Progress progress = getProgressByChoice(progressName);
 
-        System.out.println("Введите желаемое действие: ");
+        System.out.println("Введите тип задачи, статус которой вы хотите обновить: ");
         System.out.println("    1) Обновление статуса ЗАДАЧИ");
         System.out.println("    2) Обновление статуса ПОДЗАДАЧИ конкретного эпика");
 

@@ -17,7 +17,7 @@ public class Epic extends Task {
         int i = 1;
         String result = "";
         for (SubTask subTask : subTasks.values()) {
-            result = result + "\n" + i + ". " + subTask.name + ". Описание: " + subTask.description + ". Статус: " + subTask.getProgress() + ";";
+            result = result + "\n" + i + ". " + subTask.getName() + ". Описание: " + subTask.getDescription() + ". Статус: " + subTask.getProgress() + ";";
             i++;
         }
         return "Имя эпика: " + this.getName() + ". Описание: " + this.getDescription() + ". Статус: " + this.getProgress() +
