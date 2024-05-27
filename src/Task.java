@@ -1,15 +1,65 @@
 import java.util.Objects;
 
 public class Task {
-    private static int id;
+    private int id;
     private String name;
     private String description;
-    private Progress progress;
+    private Status status;
 
+    public Task(String name, String description) { // Используем для создания
+        this.name = name;
+        this.description = description;
+        this.status = Status.NEW;
+    }
+
+    public Task(int id, String name, String description, Status status) { //используем для обновления
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.status = status;
+    }
+
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+
+
+
+/*
     public Task(String name, String description) {
         this.name = name;
         this.description = description;
-        this.progress = Progress.NEW;
+        this.status = Status.NEW;
     }
     public int getId() {
         id = Objects.hash(this.name);
@@ -22,12 +72,12 @@ public class Task {
         return description;
     }
 
-    public Progress getProgress() {
-        return progress;
+    public Status getStatus() {
+        return status;
     }
 
-    public void setProgress(Progress progress) {
-        this.progress = progress;
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     @Override
@@ -47,6 +97,6 @@ public class Task {
     public String toString() {
         return "Имя задачи: '" + name + '\'' +
                 ", описание задачи: '" + description + '\'' +
-                ", текущий статус задачи: " + progress;
-    }
+                ", текущий статус задачи: " + status;
+    }*/
 }

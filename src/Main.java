@@ -1,3 +1,4 @@
+
 import java.util.Scanner;
 
 public class Main {
@@ -6,7 +7,56 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Поехали!");
 
-        while (true) {
+        Task task1 = new Task("name1", "descrooption1");
+        TaskManager.addTask(task1);
+        System.out.println(TaskManager.getAllTasks());
+        System.out.println(task1.getId());
+        System.out.println(task1.getStatus());
+        System.out.println(task1.getName());
+        System.out.println(task1.getDescription());
+
+
+        Epic epic1 = new Epic("epicName1", "epicDescription1");
+        TaskManager.addEpic(epic1);
+        System.out.println(TaskManager.getAllEpics());
+        System.out.println(epic1.getId());
+        System.out.println(epic1.getStatus());
+        System.out.println(epic1.getName());
+        System.out.println(epic1.getDescription());
+
+
+
+        SubTask subTask1 = new SubTask(epic1.getId(), "подзадача1 эпика1", "описание 1 подзадачи1 эпика 1");
+        TaskManager.addSubTask(subTask1);
+        System.out.println("......");
+       System.out.println(TaskManager.getAllEpics());
+        System.out.println("......");
+        System.out.println(subTask1.getId());
+        System.out.println(subTask1.getEpicId());
+
+        System.out.println(subTask1.getStatus());
+        System.out.println(subTask1.getName());
+        System.out.println(subTask1.getDescription());
+        System.out.println("...... обновляем подзадачу");
+        SubTask subTask01 = new SubTask(subTask1.getId(), "новое имя подзадачи1 эпика1", "новое описание пподзадачи1 эпика1", Status.DONE);
+        System.out.println(subTask1.getEpicId());
+        System.out.println(subTask01.getEpicId());
+
+    SubTask subTask1updated = TaskManager.updateSubTask(subTask01);
+       System.out.println(subTask1updated);
+
+
+
+
+
+
+
+
+
+    }
+
+}
+/*        while (true) {
             printMenu();
             String command = scanner.nextLine();
 
@@ -209,8 +259,8 @@ public class Main {
         System.out.println("2 - IN_PROGRESS");
         System.out.println("3 - DONE");
 
-        String progressName = scanner.nextLine();
-        Progress progress = getProgressByChoice(progressName);
+        String statusName = scanner.nextLine();
+        Status status = getStatusByChoice(statusName);
 
         System.out.println("Введите тип задачи, статус которой вы хотите обновить: ");
         System.out.println("    1) Обновление статуса ЗАДАЧИ");
@@ -222,12 +272,12 @@ public class Main {
 
         switch (command) {
             case "1":
-                TaskManager.updateTaskProgress(name, progress);
+                TaskManager.updateTaskStatus(name, status);
                 break;
             case "2":
                 System.out.println("Введите название эпика для выбранной подзадачи");
                 String epicName = scanner.nextLine();
-                TaskManager.updateSubTaskStatus(name, epicName, progress);
+                TaskManager.updateSubTaskStatus(name, epicName, status);
                 break;
             default:
                 System.out.println("Команда не найдена!");
@@ -236,19 +286,20 @@ public class Main {
 
     }
 
-    public static Progress getProgressByChoice(String progressName) {
-        Progress progress;
+    public static Status getStatusByChoice(String statusName) {
+        Status status;
 
-        if (progressName.equals("1")) {
-            progress = Progress.NEW;
-        } else if (progressName.equals("2")) {
-            progress = Progress.IN_PROGRESS;
-        } else if (progressName.equals("3")) {
-            progress = Progress.DONE;
+        if (statusName.equals("1")) {
+            status = Status.NEW;
+        } else if (statusName.equals("2")) {
+            status = Status.IN_PROGRESS;
+        } else if (statusName.equals("3")) {
+            status = Status.DONE;
         } else {
             System.out.println("Неизвестная команда! По умолчанию статус IN_PROGRESS");
-            progress = Progress.IN_PROGRESS;
+            status = Status.IN_PROGRESS;
         }
-        return progress;
-    }
-}
+        return status;
+    }*/
+
+
