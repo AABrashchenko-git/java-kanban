@@ -1,4 +1,4 @@
-import java.util.Objects;
+package ru.practicum.taskTracker.model;
 
 public class Task {
     private int id;
@@ -6,19 +6,18 @@ public class Task {
     private String description;
     private Status status;
 
-    public Task(String name, String description) { // Используем для создания
+    public Task(String name, String description) {
         this.name = name;
         this.description = description;
         this.status = Status.NEW;
     }
 
-    public Task(int id, String name, String description, Status status) { //используем для обновления
+    public Task(int id, String name, String description, Status status) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.status = status;
     }
-
 
     public int getId() {
         return id;
@@ -55,7 +54,7 @@ public class Task {
     @Override
     public String toString() {
         StringBuilder taskInfo = new StringBuilder();
-        taskInfo.append("\n [ID задачи: ");
+        taskInfo.append("\b\b\n [ID задачи: ");
         taskInfo.append(this.getId());
         taskInfo.append("; Имя задачи: ");
         taskInfo.append(this.getName());
@@ -66,45 +65,4 @@ public class Task {
         taskInfo.append("]");
         return taskInfo.toString();
     }
-
-
-
-/*
-    public Task(String name, String description) {
-        this.name = name;
-        this.description = description;
-        this.status = Status.NEW;
-    }
-    public int getId() {
-        id = Objects.hash(this.name);
-        return id;
-    }
-    public String getName() {
-        return name;
-    }
-    public String getDescription() {
-        return description;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Task task = (Task) o;
-        return Objects.equals(name, task.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name);
-    }
-*/
 }
