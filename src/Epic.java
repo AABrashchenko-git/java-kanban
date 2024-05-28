@@ -20,12 +20,18 @@ public class Epic extends Task {
     @Override
     public String toString() {
         int i = 1;
-        String result = "";
+        StringBuilder subTaskInfo = new StringBuilder();
+        StringBuilder epicInfo = new StringBuilder();
         for (SubTask subTask : subTasks.values()) {
-            result = result + "\n" + i + ". " + subTask.getName() + ". Описание: " + subTask.getDescription() + ". Статус: " + subTask.getStatus() + ";";
+            subTaskInfo.append("\n\t").append(i).append(". ID подзадачи: ").append(subTask.getId());
+            subTaskInfo.append( ". Имя подзадачи: ").append(subTask.getName());
+            subTaskInfo.append( ". Описание: ").append(subTask.getDescription()).append(". Статус: ");
+            subTaskInfo.append(subTask.getStatus());
             i++;
         }
-        return "Имя эпика: " + this.getName() + ". Описание: " + this.getDescription() + ". Статус: " + this.getStatus() +
-                ". Текущие подзадачи: " + result;
+        epicInfo.append(" \n[ID эпика: ").append(this.getId()).append("; Имя эпика: ").append(this.getName());
+        epicInfo.append(". Описание: ").append(this.getDescription()).append( ". Статус: ").append(this.getStatus());
+        epicInfo.append(". Текущие подзадачи: ").append(subTaskInfo).append("]");
+        return epicInfo.toString();
     }
 }

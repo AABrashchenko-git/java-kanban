@@ -52,6 +52,20 @@ public class Task {
         this.status = status;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder taskInfo = new StringBuilder();
+        taskInfo.append("\n [ID задачи: ");
+        taskInfo.append(this.getId());
+        taskInfo.append("; Имя задачи: ");
+        taskInfo.append(this.getName());
+        taskInfo.append(", описание задачи: ");
+        taskInfo.append(this.getDescription());
+        taskInfo.append(", текущий статус задачи: ");
+        taskInfo.append(this.getStatus());
+        taskInfo.append("]");
+        return taskInfo.toString();
+    }
 
 
 
@@ -92,11 +106,5 @@ public class Task {
     public int hashCode() {
         return Objects.hash(name);
     }
-
-    @Override
-    public String toString() {
-        return "Имя задачи: '" + name + '\'' +
-                ", описание задачи: '" + description + '\'' +
-                ", текущий статус задачи: " + status;
-    }*/
+*/
 }

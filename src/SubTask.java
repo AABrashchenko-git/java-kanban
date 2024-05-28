@@ -1,7 +1,7 @@
 import java.util.Objects;
 
 public class SubTask extends Task {
-    protected int epicId;
+    private int epicId;
 
     public SubTask(int epicId, String name, String description) {
         super(name, description);
@@ -9,9 +9,9 @@ public class SubTask extends Task {
         this.setStatus(Status.NEW);
      }
 
-    public SubTask(int id, String name, String description, Status status) {
+    public SubTask(int epicId, int id, String name, String description, Status status) {
         super(id, name, description, status);
-        this.epicId = getEpicId();
+        this.epicId = epicId;
     }
 
 
@@ -25,9 +25,13 @@ public class SubTask extends Task {
 
     @Override
     public String toString() {
-        return "Эпик: " + /*(this.epicName) +*/ ". Имя подзадачи:'" + this.getName() + '\'' +
-                ", описание: " + this.getDescription() + '\'' +
-                ", статус: " + this.getStatus();
+        StringBuilder subTaskInfo = new StringBuilder();
+        subTaskInfo.append("\n[Эпик: ").append(TaskManager.getEpicById(getEpicId()).getName()).append(", ID эпика: ");
+        subTaskInfo.append(this.getEpicId()).append("; ID подзадачи: ").append(this.getId()).append("; Имя подзадачи: ");
+        subTaskInfo.append(this.getName()).append(", описание подзадачи: ").append(this.getDescription());
+        subTaskInfo.append(", статус подзадачи: ").append(this.getStatus()).append("]");
+
+        return subTaskInfo.toString();
     }
 
 
