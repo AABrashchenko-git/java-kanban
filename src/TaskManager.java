@@ -24,7 +24,6 @@ public class TaskManager {
 
     // 3) Подзадачи
     public static void addSubTask(SubTask subTask) {
-        //TODO проверку на null надо?
         subTask.setId(getNextId());
         int epicId = subTask.getEpicId();
         Epic epic = allEpics.get(epicId);
@@ -35,21 +34,32 @@ public class TaskManager {
     // e. Обновление. Новая версия объекта с верным идентификатором передаётся в виде параметра.
     // 1) Задачи
     public static Task updateTask(Task task) {
-        //TODO проверку на null надо
+        Integer taskId = task.getId();
+        if(taskId == null) {
+            return null;
+        }
         return allTasks.replace(task.getId(), task);
     }
 
     // 2) Эпики
     public static Epic updateEpic(Epic epic) {
-        //TODO проверку на null надо
-        return allEpics.replace(epic.getId(), epic);
+        Integer epicId = epic.getId();
+        if(epicId == null || !allEpics.containsKey(epicId)) {
+            return null;
+        }
+        Epic epicToUpdate = allEpics.get(epic.getId());
+        epicToUpdate.setName(epic.getName());
+        epicToUpdate.setDescription(epic.getDescription());
+        return epicToUpdate;
     }
 
     // 3) Подзадачи
     public static SubTask updateSubTask(SubTask subTask) {
-        //TODO проверку на null надо
         Epic epicOfSubTask = allEpics.get(subTask.getEpicId());
-
+        Integer subTaskId = subTask.getId();
+        if(subTaskId == null || epicOfSubTask == null) {
+            return null;
+        }
         epicOfSubTask.subTasks.replace(subTask.getId(), subTask);
         epicOfSubTask.setStatus(getUpdatedEpicStatus(epicOfSubTask));
         return subTask;
@@ -117,7 +127,9 @@ public class TaskManager {
     public static void removeSubTasks() {
         for (Epic epic : allEpics.values()) {
             epic.subTasks.clear();
+            epic.setStatus(getUpdatedEpicStatus(epic));
         }
+
     }
 
     // f. Удаление по идентификатору.
@@ -136,6 +148,9 @@ public class TaskManager {
     // 3) Подзадачи
     public static void removeOneSubTaskById(int subTaskId) {
         SubTask subTask = getSubTaskById(subTaskId);
+        if(subTask==null) {
+            return;
+        }
         Epic epic = getEpicById(subTask.getEpicId());
         epic.subTasks.remove(subTask.getId());
         epic.setStatus(getUpdatedEpicStatus(epic));
