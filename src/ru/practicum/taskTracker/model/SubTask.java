@@ -16,6 +16,7 @@ public class SubTask extends Task {
         this.setEpicId(epicId);
     }
 
+
     public int getEpicId() {
         return epicId;
     }
@@ -27,9 +28,7 @@ public class SubTask extends Task {
     @Override
     public String toString() {
         StringBuilder subTaskInfo = new StringBuilder();
-        subTaskInfo.append("\b\b\n [Эпик: ");
-        subTaskInfo.append(TaskManager.getEpicById(getEpicId()).getName());
-        subTaskInfo.append(", ID эпика: ");
+        subTaskInfo.append("\b\b\n [ID эпика: ");
         subTaskInfo.append(this.getEpicId());
         subTaskInfo.append("; ID подзадачи: ");
         subTaskInfo.append(this.getId());
