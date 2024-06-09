@@ -21,8 +21,7 @@ class EpicTest {
         InMemoryTaskManager manager = new InMemoryTaskManager();
         Task testEpic = new Epic(1, "epicName", "testDescription");
         manager.addEpic((Epic) testEpic);
-        ((Epic) testEpic).addSubTaskToList((SubTask) testEpic);
-        //Немного не ясен смысл теста, если любые способы это сделать просто не скомпилируются?
+        // Немного не ясен смысл теста, если любые способы это сделать просто не скомпилируются?
         // К примеру, так
         // manager.addSubTask(testEpic); => incompatible types
         // Как вариант, нагуглил такую штуку для unit-тестов
