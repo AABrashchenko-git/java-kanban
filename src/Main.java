@@ -46,7 +46,7 @@ public class Main {
         manager.getTaskById(task1.getId());
 
         // 4. Выводим историю просмотра, смотрим отображение только 10 последних задач
-        System.out.println("\nИстория просмотра:");
+        System.out.println("\nИстория просмотра: ");
         System.out.println(manager.getHistory());
 
         // 5. Обновим задачи, получим обновленные задачи, посмотрим, что в истории просмотров
