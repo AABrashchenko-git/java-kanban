@@ -1,6 +1,7 @@
-package ru.practicum.taskTracker.model;
+package model;
 
 import org.junit.jupiter.api.Test;
+import ru.practicum.taskTracker.model.Task;
 
 import static org.junit.jupiter.api.Assertions.*;
 

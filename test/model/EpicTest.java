@@ -1,6 +1,9 @@
-package ru.practicum.taskTracker.model;
+package model;
 
 import org.junit.jupiter.api.Test;
+import ru.practicum.taskTracker.model.Epic;
+import ru.practicum.taskTracker.model.SubTask;
+import ru.practicum.taskTracker.model.Task;
 import ru.practicum.taskTracker.service.InMemoryTaskManager;
 
 import static org.junit.jupiter.api.Assertions.*;
