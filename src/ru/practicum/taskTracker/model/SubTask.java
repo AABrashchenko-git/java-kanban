@@ -1,13 +1,11 @@
 package ru.practicum.taskTracker.model;
 
-import ru.practicum.taskTracker.service.TaskManager;
-
 public class SubTask extends Task {
     private int epicId;
 
     public SubTask(int epicId, String name, String description) {
         super(name, description);
-        this.epicId = epicId;
+        this.setEpicId(epicId);
         this.setStatus(Status.NEW);
     }
 
@@ -15,7 +13,6 @@ public class SubTask extends Task {
         super(id, name, description, status);
         this.setEpicId(epicId);
     }
-
 
     public int getEpicId() {
         return epicId;
@@ -28,10 +25,10 @@ public class SubTask extends Task {
     @Override
     public String toString() {
         StringBuilder subTaskInfo = new StringBuilder();
-        subTaskInfo.append("\b\b\n [ID эпика: ");
-        subTaskInfo.append(this.getEpicId());
-        subTaskInfo.append("; ID подзадачи: ");
+        subTaskInfo.append("\b\b\n [ID подзадачи: ");
         subTaskInfo.append(this.getId());
+        subTaskInfo.append("; ID эпика: ");
+        subTaskInfo.append(this.getEpicId());
         subTaskInfo.append("; Имя подзадачи: ");
         subTaskInfo.append(this.getName());
         subTaskInfo.append(", описание подзадачи: ");

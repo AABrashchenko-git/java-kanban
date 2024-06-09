@@ -1,128 +1,88 @@
 import ru.practicum.taskTracker.model.*;
-import ru.practicum.taskTracker.service.TaskManager;
+import ru.practicum.taskTracker.service.*;
 
 public class Main {
     public static void main(String[] args) {
-        // Методы для каждого из типа задач(Задача/Эпик/Подзадача):
-        // a. Создание. Сам объект должен передаваться в качестве параметра.
-        // 1) Задачи
-        System.out.println("\nСоздаем и добавляем все типы задач...");
+
+        TaskManager manager = Managers.getDefault();
+
+        // 1. Создание и добавление задач
         Task task1 = new Task("имяЗадачи1", "описаниеЗадачи1");
         Task task2 = new Task("имяЗадачи2", "описаниеЗадачи2");
-        TaskManager.addTask(task1);
-        TaskManager.addTask(task2);
-        // 2) Эпики
+        manager.addTask(task1);
+        manager.addTask(task2);
+
         Epic epic1 = new Epic("имяЭпика1", "описаниеЭпика1");
         Epic epic2 = new Epic("имяЭпика2", "описаниеЭпика2");
+        manager.addEpic(epic1);
+        manager.addEpic(epic2);
 
-        TaskManager.addEpic(epic1);
-        TaskManager.addEpic(epic2);
-
-        // 3) Подзадачи
         SubTask subTask1 = new SubTask(epic1.getId(), "имяПодзадачи1Эпика1",
                 "описаниеПодзадачи1Эпика1");
         SubTask subTask2 = new SubTask(epic1.getId(), "имяПодзадачи2Эпика1",
                 "описаниеПодзадачи2Эпика1");
         SubTask subTask3 = new SubTask(epic2.getId(), "имяПодзадачи1Эпика2",
                 "описаниеПодзадачи1Эпика2");
+        manager.addSubTask(subTask1);
+        manager.addSubTask(subTask2);
+        manager.addSubTask(subTask3);
 
-        TaskManager.addSubTask(subTask1);
-        TaskManager.addSubTask(subTask2);
-        TaskManager.addSubTask(subTask3);
+        // 2. Выводим на экран все добавленные задачи
+        System.out.println("\nВсе добавленные в менеджер задачи");
+        printAllTasks(manager);
 
-        // b. Получение списка всех задач.
-        // 1) Задачи
-        System.out.println("\nвсе добавленные задачи:");
-        System.out.println(TaskManager.getAllTasks());
-        // 2) Эпики
-        System.out.println("\nвсе добавленные эпики:");
-        System.out.println(TaskManager.getAllEpics());
-        // 3) Подзадачи
-        System.out.println("\nвсе добавленные подзадачи:");
-        System.out.println(TaskManager.getAllSubTasks());
-        // c. Дополнительные методы:
-        //1) Получение списка всех подзадач определённого эпика.
-        System.out.println("\nСписок всех подзадач определенного эпика epic1 (id=3)");
-        System.out.println(TaskManager.getAllSubTaskOfEpic(epic1.getId()));
-        System.out.println("..................................");
+        // 3. Получение разного вида задач по идентификатору
+        manager.getTaskById(task1.getId());
+        manager.getTaskById(task2.getId());
+        manager.getTaskById(task2.getId());
+        manager.getEpicById(epic1.getId());
+        manager.getEpicById(epic2.getId());
+        manager.getEpicById(epic2.getId());
+        manager.getSubTaskById(subTask1.getId());
+        manager.getSubTaskById(subTask2.getId());
+        manager.getSubTaskById(subTask3.getId());
+        manager.getSubTaskById(subTask3.getId());
+        manager.getTaskById(task1.getId());
+        manager.getTaskById(task1.getId());
 
-        // d. Обновление. Новая версия объекта с верным идентификатором передаётся в виде параметра.
-        // 1) Задачи
-        System.out.println("\nобновляем задачу1, выводим в консоль:");
-        Task task01 = new Task(task1.getId(), "НовоеИмяЗадачи1", "новоеОписаниеЗадачи1", Status.DONE);
-        TaskManager.updateTask(task01);
-        System.out.println(TaskManager.getTaskById(task1.getId()));
-        // 2) Эпики
-        System.out.println("\nобновляем эпик1, выводим в консоль :");
-        Epic epic01 = new Epic(epic1.getId(), "НовоеИмяЭпика1", "новоеОписаниеЭпика1");
-        TaskManager.updateEpic(epic01);
-        System.out.println(TaskManager.getEpicById(epic1.getId()));
-        // 3) Подзадачи
-        System.out.println("\nобновляем подзадачи1-3, выводим эпики в консоль, смотрим новые статусы подзадач и эпиков:");
+        // 4. Выводим историю просмотра, смотрим отображение только 10 последних задач
+        System.out.println("\nИстория просмотра:");
+        System.out.println(manager.getHistory());
 
-        SubTask subTask01 = new SubTask(subTask1.getEpicId(), subTask1.getId(), "новоеИмяПодзадачи1Эпика1",
-                "новоеОписаниеПодзадачи1Эпика1", Status.DONE);
-        SubTask subTask02 = new SubTask(subTask2.getEpicId(), subTask2.getId(), "новоеИмяПодзадачи2Эпика1",
-                "новоеОписаниеПодзадачи2Эпика1", Status.IN_PROGRESS);
-        SubTask subTask03 = new SubTask(subTask3.getEpicId(), subTask3.getId(), "новоеИмяПодзадачи1Эпика2",
-                "новоеОписаниеПодзадачи1Эпика2", Status.DONE);
+        // 5. Обновим задачи, получим обновленные задачи, посмотрим, что в истории просмотров
+        manager.updateTask(new Task(task1.getId(), "новое имя задачи1", "новоеОписаниеЗадачи1", Status.DONE));
+        manager.updateEpic(new Epic(epic1.getId(), "новое имя эпика1", "новоеОписаниеЭпика1"));
+        manager.updateSubTask(new SubTask(epic1.getId(), subTask1.getId(), "новое имя подзадачи1",
+                "новоеОписаниеПодзадачи1", Status.DONE));
 
-        TaskManager.updateSubTask(subTask01);
-        TaskManager.updateSubTask(subTask02);
-        TaskManager.updateSubTask(subTask03);
+        Task updatedTask = manager.getTaskById(task1.getId());
+        Epic updatedEpic = manager.getEpicById(epic1.getId());
+        SubTask updatedSubTask = manager.getSubTaskById(subTask1.getId());
 
-        System.out.println(TaskManager.getAllEpics());
+        System.out.println("\nПроведено обновление задач! История просмотра:");
+        System.out.println(manager.getHistory());
 
-        System.out.println("..................................");
-        // e. Получение по идентификатору
-        // 1) Задачи
-        System.out.println("\nПолучаем задачу по id (task1.getId=1):");
-        Task getTask = TaskManager.getTaskById(task1.getId());
-        System.out.println(getTask);
-        // 2) Эпики
-        System.out.println("\nПолучаем эпик по id (epic1.getId=3):");
-        Epic getEpic = TaskManager.getEpicById(epic1.getId());
-        System.out.println(getEpic);
-        // 3) Подзадачи
-        System.out.println("\nПолучаем подзадачу по id (subTask1.getId=5):");
-        SubTask getSubTask = TaskManager.getSubTaskById(subTask1.getId());
-        System.out.println(getSubTask);
-        System.out.println("..................................");
-        // f. Удаление по идентификатору.
-        // 1) Задачи
-        TaskManager.removeOneTaskById(task1.getId());
-        System.out.println("\nСписок задач после удаления task1:");
-        System.out.println(TaskManager.getAllTasks());
-        // 2) Эпики
-        TaskManager.removeOneEpicById(epic1.getId());
-        System.out.println("\nСписок эпиков после удаления epic1:");
-        System.out.println(TaskManager.getAllEpics());
-        // 3) Подзадачи
-        TaskManager.removeOneSubTaskById(subTask3.getId());
-        System.out.println("\nСписок подзадач после удаления subTask3:");
-        System.out.println(TaskManager.getAllSubTasks());
-        System.out.println("\nПосмотрим на статусы эпиков (обновились ли):");
-        System.out.println(TaskManager.getAllEpics());
-        System.out.println("..................................");
-        // g. Удаление всех задач.
-        // 1) Задачи
-        TaskManager.removeTasks();
-        System.out.println("\nСписок задач после удаления:");
-        System.out.println(TaskManager.getAllTasks());
-        // 2) Подзадачи
-        TaskManager.removeSubTasks();
-        System.out.println("\nСписок подзадач после удаления:");
-        System.out.println(TaskManager.getAllSubTasks());
-        System.out.println("\nПосмотрим на статусы эпиков (обновились ли):");
-        System.out.println(TaskManager.getAllEpics());
-        // 3) Эпики
-        TaskManager.removeEpics();
-        System.out.println("\nСписок эпиков после удаления:");
-        System.out.println(TaskManager.getAllEpics());
+        // Удалим все задачи, эпики и подзадачи, посмотрим на корректное функционирование истории задач
+        manager.removeTasks();
+        manager.removeEpics();
+        manager.removeSubTasks();
+        System.out.println("\nПроведено удаление всех типов задач! История просмотра:");
+        System.out.println(manager.getHistory()); // => в истории всё сохранилось
 
-        if (TaskManager.getAllEpics().isEmpty() && TaskManager.getAllTasks().isEmpty() &&
-                TaskManager.getAllSubTasks().isEmpty()) {
-            System.out.println("\nВсе списки задач пусты!");
+    }
+
+    private static void printAllTasks(TaskManager manager) {
+        System.out.println("\nЗадачи:");
+        for (Task task : manager.getAllTasks()) {
+            System.out.println(task);
+        }
+        System.out.println("\nЭпики:");
+        for (Task epic : manager.getAllEpics()) {
+            System.out.println(epic);
+        }
+        System.out.println("\nПодзадачи:");
+        for (Task subtask : manager.getAllSubTasks()) {
+            System.out.println(subtask);
         }
     }
 }
