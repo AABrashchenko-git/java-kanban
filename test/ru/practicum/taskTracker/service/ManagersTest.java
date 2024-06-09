@@ -9,10 +9,12 @@ class ManagersTest {
     @Test
     void shouldReturnDefaultTaskManager() {
         assertNotNull(Managers.getDefault(), "экземпляр менеджера не объявлен или не инициализирован");
+        assertTrue(Managers.getDefault() instanceof TaskManager);
     }
 
     @Test
     void shouldReturnDefaultHistoryManager() {
         assertNotNull(Managers.getDefaultHistory(), "экземпляр менеджера не объявлен или не инициализирован");
+        assertTrue(Managers.getDefaultHistory() instanceof HistoryManager);
     }
 }

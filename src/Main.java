@@ -59,7 +59,9 @@ public class Main {
         Epic updatedEpic = manager.getEpicById(epic1.getId());
         SubTask updatedSubTask = manager.getSubTaskById(subTask1.getId());
 
-        System.out.println("\nПроведено обновление задач! История просмотра:");
+        System.out.println("\nПроведено обновление задач! Выведем список всех задач");
+        printAllTasks(manager);
+        System.out.println("\nИстория просмотра после обновления задач:");
         System.out.println(manager.getHistory());
 
         // Удалим все задачи, эпики и подзадачи, посмотрим на корректное функционирование истории задач
