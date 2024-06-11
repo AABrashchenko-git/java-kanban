@@ -7,6 +7,7 @@ import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
     private static final int HISTORY_LIMIT = 10;
+    //Спасибо за инфу про LinkedList и про особенности использования LinkedList и ArrayList, полезно!
     private final List<Task> historyList = new LinkedList<>();
 
     @Override
