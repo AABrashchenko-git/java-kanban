@@ -25,8 +25,8 @@ class SubTaskTest {
         SubTask testSubTask = new SubTask(1, "subTaskName", "testDescription");
         testSubTask = new SubTask(testSubTask.getId(), "subTaskName", "testDescription");
         manager.addSubTask(testSubTask);
-        // eсли assertEquals, не скомпилируется, исправил на NotEquals и поменял сообщение, чтобы тест завершался успешно
-        assertNotEquals(1, testSubTask.getEpicId(), "Epics id are not equal");
+        // исправил на NotEquals, чтобы тест завершался успешно
+        assertNotEquals(1, testSubTask.getEpicId(), "Epics id are equal");
     }
 
 }
