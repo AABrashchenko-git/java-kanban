@@ -22,10 +22,10 @@ class SubTaskTest {
     void showImpossibilityOfAddingSubTaskAsItsEpic() {
         // проверьте, что объект Subtask нельзя сделать своим же эпиком
         InMemoryTaskManager manager = new InMemoryTaskManager();
-        // Как и в EpicTest, если прямо добавлять, при попытке добавить код не скопилируется, например
-        // SubTask testSubTask = new SubTask(testSubTask.getId(), "subTaskName", "testDescription");
-        // manager.addSubTask(testSubTask);
-        // Epic epic = manager.getEpicById(testSubTask.getId()); => null
+        SubTask testSubTask = new SubTask(1, "subTaskName", "testDescription");
+        testSubTask = new SubTask(testSubTask.getId(), "subTaskName", "testDescription");
+        manager.addSubTask(testSubTask);
+        assertNotEquals(1, testSubTask.getEpicId(), "Epics id are equal");
     }
 
 }

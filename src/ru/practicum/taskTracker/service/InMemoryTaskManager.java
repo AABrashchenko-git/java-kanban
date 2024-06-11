@@ -7,9 +7,9 @@ import java.util.*;
 public class InMemoryTaskManager implements TaskManager {
     private int taskCounter;
     private final HistoryManager historyManager = Managers.getDefaultHistory();
-    private final HashMap<Integer, Task> allTasks = new HashMap<>();
-    private final HashMap<Integer, Epic> allEpics = new HashMap<>();
-    private final HashMap<Integer, SubTask> allSubTasks = new HashMap<>();
+    private final Map<Integer, Task> allTasks = new HashMap<>();
+    private final Map<Integer, Epic> allEpics = new HashMap<>();
+    private final Map<Integer, SubTask> allSubTasks = new HashMap<>();
 
     // Методы для каждого из типа задач(Задача/Эпик/Подзадача):
     // d. Создание. Сам объект должен передаваться в качестве параметра.
@@ -63,7 +63,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         Epic currentEpic = allEpics.get(epic.getId());
         allEpics.replace(epic.getId(), epic);
-        for(SubTask subTask : currentEpic.getSubTasksList()) {
+        for (SubTask subTask : currentEpic.getSubTasksList()) {
             epic.addSubTaskToList(subTask);
         }
         return epic;
@@ -89,7 +89,9 @@ public class InMemoryTaskManager implements TaskManager {
     public Task getTaskById(int taskId) {
         Task task = allTasks.get(taskId);
         // Добавляем задачу в историю
-        historyManager.add(task);
+        if (task != null) {
+            historyManager.add(task);
+        }
         return task;
     }
 
@@ -98,7 +100,9 @@ public class InMemoryTaskManager implements TaskManager {
     public Epic getEpicById(int epicId) {
         Epic epic = allEpics.get(epicId);
         // Добавляем эпик в историю
-        historyManager.add(epic);
+        if (epic != null) {
+            historyManager.add(epic);
+        }
         return epic;
     }
 
@@ -106,7 +110,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public SubTask getSubTaskById(int subTaskId) {
         SubTask subTask = allSubTasks.get(subTaskId);
-        historyManager.add(subTask);
+        if (subTask != null) {
+            historyManager.add(subTask);
+        }
         return subTask;
     }
 

@@ -44,8 +44,12 @@ public class Main {
         manager.getSubTaskById(subTask3.getId());
         manager.getTaskById(task1.getId());
         manager.getTaskById(task1.getId());
+        System.out.println("\nПолучаем элементы с несуществующими индексами...");
+        manager.getTaskById(124);
+        manager.getEpicById(223);
+        manager.getSubTaskById(543);
 
-        // 4. Выводим историю просмотра, смотрим отображение только 10 последних задач
+        // 4. Выводим историю просмотра, смотрим отображение только 10 последних задач, несуществующие задачи не отобразятся
         System.out.println("\nИстория просмотра: ");
         System.out.println(manager.getHistory());
 
