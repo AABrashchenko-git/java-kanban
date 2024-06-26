@@ -54,6 +54,28 @@ public class Main {
         System.out.println("\nИстория просмотра: ");
         System.out.println(manager.getHistory());
 
+        System.out.println("\nСпринт 6. Добавим >10 задач, оценим функционал истории задач");
+        Task task3 = new Task("имяЗадачи3", "описаниеЗадачи3");
+        Task task4 = new Task("имяЗадачи4", "описаниеЗадачи4");
+        Task task5 = new Task("имяЗадачи5", "описаниеЗадачи5");
+        Task task6 = new Task("имяЗадачи6", "описаниеЗадачи6");
+        Task task7 = new Task("имяЗадачи7", "описаниеЗадачи7");
+        manager.addTask(task3);
+        manager.addTask(task4);
+        manager.addTask(task5);
+        manager.addTask(task6);
+        manager.addTask(task7);
+        manager.getTaskById(task4.getId());
+        manager.getTaskById(task5.getId());
+        manager.getTaskById(task6.getId());
+        manager.getTaskById(task7.getId());
+        manager.getTaskById(task3.getId());
+        manager.getTaskById(task3.getId());
+        manager.getTaskById(task3.getId());
+
+        System.out.println("\nИстория просмотра: ");
+        System.out.println(manager.getHistory());
+
         // 5. Обновим задачи, получим обновленные задачи, посмотрим, что в истории просмотров
         manager.updateTask(new Task(task1.getId(), "новое имя задачи1", "новоеОписаниеЗадачи1", Status.DONE));
         manager.updateEpic(new Epic(epic1.getId(), "новое имя эпика1", "новоеОписаниеЭпика1"));
@@ -73,8 +95,14 @@ public class Main {
         manager.removeTasks();
         manager.removeEpics();
         manager.removeSubTasks();
-        System.out.println("\nПроведено удаление всех типов задач! История просмотра:");
+        manager.removeOneEpicById(epic2.getId());
+        System.out.println("\n!!!!!!!!!!! Проведено удаление всех типов задач! История после удаления:");
+
         System.out.println(manager.getHistory()); // => в истории всё сохранилось
+        System.out.println("\nСписок задач после удаления:");
+        System.out.println(manager.getAllTasks());
+        System.out.println(manager.getAllEpics());
+        System.out.println(manager.getAllSubTasks());
 
     }
 

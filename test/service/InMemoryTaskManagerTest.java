@@ -106,4 +106,12 @@ class InMemoryTaskManagerTest {
         assertEquals(subTaskFromMap.getStatus(), testSubTask.getStatus(), "Статусы задач до и после добавления не равны");
         assertEquals(subTaskFromMap.getEpicId(), testSubTask.getEpicId(), "ID эпика задач до и после добавления не равны");
     }
+
+    // SPRINT 6
+    @Test
+    void ensureSTH() {
+
+    }
+
+
 }
