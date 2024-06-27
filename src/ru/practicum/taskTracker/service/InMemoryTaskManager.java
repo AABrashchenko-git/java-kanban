@@ -139,7 +139,7 @@ public class InMemoryTaskManager implements TaskManager {
     // 1) Задачи
     @Override
     public void removeTasks() {
-        for(Task task : allTasks.values()) {
+        for (Task task : allTasks.values()) {
             historyManager.remove(task.getId());
         }
         allTasks.clear();
@@ -148,10 +148,10 @@ public class InMemoryTaskManager implements TaskManager {
     // 2) Эпики
     @Override
     public void removeEpics() {
-        for(Epic epic : allEpics.values()) {
+        for (Epic epic : allEpics.values()) {
             historyManager.remove(epic.getId());
         }
-        for(SubTask subTask : allSubTasks.values()) {
+        for (SubTask subTask : allSubTasks.values()) {
             historyManager.remove(subTask.getId());
         }
         allEpics.clear();
@@ -161,7 +161,7 @@ public class InMemoryTaskManager implements TaskManager {
     // 3) Подзадачи
     @Override
     public void removeSubTasks() {
-        for(SubTask subTask : allSubTasks.values()) {
+        for (SubTask subTask : allSubTasks.values()) {
             historyManager.remove(subTask.getId());
         }
         allSubTasks.clear();
@@ -259,4 +259,5 @@ public class InMemoryTaskManager implements TaskManager {
             return Status.IN_PROGRESS;
         }
     }
+
 }

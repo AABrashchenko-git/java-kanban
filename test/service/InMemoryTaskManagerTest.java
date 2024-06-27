@@ -4,6 +4,8 @@ import org.junit.jupiter.api.*;
 import ru.practicum.taskTracker.model.*;
 import ru.practicum.taskTracker.service.InMemoryTaskManager;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest {
@@ -108,10 +110,31 @@ class InMemoryTaskManagerTest {
     }
 
     // SPRINT 6
+    // Удаляемые подзадачи не должны хранить внутри себя старые id
+    // + Внутри эпиков не должно оставаться неактуальных id подзадач
     @Test
-    void ensureSTH() {
-
+    void ensureSubTaskAreNotContainedAnywhereAfterRemoval() {
+        // Создаем подзадачу, добаляем, просматриваем
+        Epic testEpic = new Epic("epicName", "epicTestDescription");
+        manager.addEpic(testEpic);
+        SubTask testSubTask = new SubTask(testEpic.getId(), "subTaskName", "subTestDescription");
+        manager.addSubTask(testSubTask);
+        SubTask subTask = manager.getSubTaskById(testSubTask.getId());
+        // Проверяем, что подзадача ушла в историю и затем удаляем её
+        assertTrue(manager.getHistory().contains(testSubTask));
+        assertEquals(1, manager.getHistory().size());
+        manager.removeOneSubTaskById(testSubTask.getId());
+        // Проверяем, что после удаления задачи не существуют в списке подзадач
+        SubTask removedSubTask = manager.getSubTaskById(testSubTask.getId());
+        assertNull(removedSubTask,
+                "Удаленную подзадачу можно получить по id!");
+        // Проверяем, что эпик больше не содержит неактуальную удаленную подзадачу
+        assertEquals(0, testEpic.getSubTasksList().size(),
+                "Удаленная подзадача содержится в эпике!");
+        // Проверяем, что подзадача с данным id больше не хранится в истории
+        for (Task subTaskInHistory : manager.getHistory()) {
+            assertNotEquals(testSubTask.getId(), subTaskInHistory.getId());
+        }
     }
-
 
 }
