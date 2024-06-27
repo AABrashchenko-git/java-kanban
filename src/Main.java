@@ -49,7 +49,7 @@ public class Main {
         manager.getSubTaskById(subTask2.getId());
         manager.getSubTaskById(subTask3.getId());
         manager.getTaskById(task1.getId());
-        manager.getTaskById(task1.getId());
+        manager.getTaskById(task1.getId()); 
         manager.getSubTaskById(subTask3.getId());
         manager.getEpicById(epic1.getId());
         manager.getEpicById(epic2.getId());
