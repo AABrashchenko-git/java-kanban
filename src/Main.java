@@ -44,7 +44,7 @@ public class Main {
         manager.getSubTaskById(subTask3.getId());
         manager.getTaskById(task1.getId());
         manager.getTaskById(task1.getId());
-        System.out.println("\nПолучаем элементы с несуществующими индексами");
+        System.out.println("\nПолучаем элементы с несуществующими индексами...");
         manager.getTaskById(124);
         manager.getEpicById(223);
         manager.getSubTaskById(543);
