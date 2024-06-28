@@ -1,7 +1,5 @@
 package ru.practicum.taskTracker.model;
 
-import ru.practicum.taskTracker.service.InMemoryTaskManager;
-
 import java.util.Objects;
 
 public class Task {
