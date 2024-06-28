@@ -4,28 +4,35 @@ import org.junit.jupiter.api.*;
 import ru.practicum.taskTracker.model.*;
 import ru.practicum.taskTracker.service.InMemoryTaskManager;
 
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest {
     InMemoryTaskManager manager;
+    private Task testTask;
+    private Task testTask2;
+    private Epic testEpic;
+    private Epic testEpic2;
+    private SubTask testSubTask;
 
     @BeforeEach
     void getNewTaskManager() {
         manager = new InMemoryTaskManager();
+        testTask = new Task("taskName", "testDescription");
+        testTask2 = new Task("taskName2", "testDescription2");
+        manager.addTask(testTask);
+        manager.addTask(testTask2);
+        testEpic = new Epic("taskName", "testDescription");
+        testEpic2 = new Epic("taskName2", "testDescription2");
+        manager.addEpic(testEpic);
+        manager.addEpic(testEpic2);
+        testSubTask = new SubTask(testEpic.getId(), "taskName", "testDescription");
+        manager.addSubTask(testSubTask);
     }
 
     @Test
     void addTask() {
         // проверьте, что InMemoryTaskManager действительно добавляет задачи разного типа и может найти их по id
         // задачи
-        Task testTask = new Task("taskName", "testDescription");
-        Task testTask2 = new Task("taskName2", "testDescription2");
-
-        manager.addTask(testTask);
-        manager.addTask(testTask2);
-
         assertNotNull(manager.getTaskById(testTask.getId()), "Task not found");
         assertNotNull(manager.getTaskById(testTask2.getId()), "Task not found");
         assertEquals(testTask, manager.getTaskById(testTask.getId()), "Task are not equal");
@@ -37,12 +44,6 @@ class InMemoryTaskManagerTest {
     void addEpicAndSubTask() {
         // проверьте, что InMemoryTaskManager действительно добавляет задачи разного типа и может найти их по id
         // Эпики
-        Epic testEpic = new Epic("taskName", "testDescription");
-        Epic testEpic2 = new Epic("taskName2", "testDescription2");
-
-        manager.addEpic(testEpic);
-        manager.addEpic(testEpic2);
-
         assertNotNull(manager.getEpicById(testEpic.getId()), "Epic not found");
         assertNotNull(manager.getEpicById(testEpic2.getId()), "Epic not found");
         assertEquals(testEpic, manager.getEpicById(testEpic.getId()), "Epics are not equal");
@@ -61,32 +62,20 @@ class InMemoryTaskManagerTest {
         assertEquals(testSubTask, manager.getSubTaskById(testSubTask.getId()), "Task are not equal");
         assertEquals(testSubTask2, manager.getSubTaskById(testSubTask2.getId()), "Task are not equal");
         assertNotNull(manager.getAllTasks(), "подзадачи не возвращаются.");
-
     }
 
     @Test
     void ensureNoCollisionsInTasksWithGivenAndGeneratedId() {
         //проверьте, что задачи с заданным id и сгенерированным id не конфликтуют внутри менеджера
-        Task testTask1 = new Task("taskName1", "testDescription1");
-        Task testTask2 = new Task("taskName2", "testDescription2");
+        testTask.setId(manager.getNextId());
+        testTask2.setId(testTask.getId());
 
-        testTask1.setId(manager.getNextId());
-        testTask2.setId(testTask1.getId());
-
-        assertEquals(testTask1, testTask2, "Задачи с одинаковым id не равны!");
+        assertEquals(testTask, testTask2, "Задачи с одинаковым id не равны!");
     }
 
     @Test
     void ensureTaskIsTheSameAfterAdded() {
         // создайте тест, в котором проверяется неизменность задачи (по всем полям) при добавлении задачи в менеджер
-        Task testTask = new Task("taskName", "testDescription");
-        Epic testEpic = new Epic("taskName", "testDescription");
-        SubTask testSubTask = new SubTask(testEpic.getId(), "taskName", "testDescription");
-
-        manager.addTask(testTask);
-        manager.addEpic(testEpic);
-        manager.addSubTask(testSubTask);
-
         Task taskFromMap = manager.getTaskById(testTask.getId());
         Epic epicFromMap = manager.getEpicById(testEpic.getId());
         SubTask subTaskFromMap = manager.getSubTaskById(testSubTask.getId());
@@ -114,11 +103,7 @@ class InMemoryTaskManagerTest {
     // + Внутри эпиков не должно оставаться неактуальных id подзадач
     @Test
     void ensureSubTaskAreNotContainedAnywhereAfterRemoval() {
-        // Создаем подзадачу, добаляем, просматриваем
-        Epic testEpic = new Epic("epicName", "epicTestDescription");
-        manager.addEpic(testEpic);
-        SubTask testSubTask = new SubTask(testEpic.getId(), "subTaskName", "subTestDescription");
-        manager.addSubTask(testSubTask);
+        // просматриваем подзадачу
         SubTask subTask = manager.getSubTaskById(testSubTask.getId());
         // Проверяем, что подзадача ушла в историю и затем удаляем её
         assertTrue(manager.getHistory().contains(testSubTask));

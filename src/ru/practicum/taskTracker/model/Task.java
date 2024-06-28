@@ -1,5 +1,7 @@
 package ru.practicum.taskTracker.model;
 
+import ru.practicum.taskTracker.service.InMemoryTaskManager;
+
 import java.util.Objects;
 
 public class Task {
@@ -24,9 +26,8 @@ public class Task {
     public int getId() {
         return id;
     }
-
     public void setId(int id) {
-        if (id > 0) {
+        if (id >= InMemoryTaskManager.getTaskCounter()) {
             this.id = id;
         }
     }
@@ -36,7 +37,9 @@ public class Task {
     }
 
     public void setName(String name) {
-        if (name != null) {
+        // Нашел такую штуку, чтобы вводимая строка соответствовала регулярному
+        // выражению (строки, пробелы, символы и тд), если есть другие подходы - буду признателен, если поделишься :)
+        if (name != null && (name.length() > 1) && name.matches("^[\\p{L}\\p{N}\\s\\p{P}]+$")) {
             this.name = name;
         }
     }
@@ -46,7 +49,8 @@ public class Task {
     }
 
     public void setDescription(String description) {
-        if (description != null) {
+        if (description != null && (description.length() > 1)
+                && description.matches("^[\\p{L}\\p{N}\\s\\p{P}]+$")) {
             this.description = description;
         }
     }
