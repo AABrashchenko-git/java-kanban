@@ -5,7 +5,7 @@ import ru.practicum.taskTracker.model.*;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
-    private static int taskCounter;
+    private int taskCounter;
     private final HistoryManager historyManager = Managers.getDefaultHistory();
     private final Map<Integer, Task> allTasks = new HashMap<>();
     private final Map<Integer, Epic> allEpics = new HashMap<>();
@@ -258,10 +258,6 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             return Status.IN_PROGRESS;
         }
-    }
-
-    public static int getTaskCounter() {
-        return taskCounter;
     }
 
 }

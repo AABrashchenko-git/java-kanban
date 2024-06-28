@@ -28,12 +28,11 @@ class TaskTest {
         // В классе SubTask только один сеттер, который используется только внутри класса, поэтому сделал его приватным
         Task testTask = new Task("taskName", "testDescription");
         testTask.setId(1);
-        // проверяем сеттер id
-        testTask.setId(-999);
-        assertNotEquals(-999, testTask.getId(), "Задается некорректное значение id!");
         // проверяем сеттер имени
         testTask.setName(null);
         assertNotNull(testTask.getName(), "Задается некорректное значение имени!");
+        testTask.setName(" ");
+        assertNotEquals(" ", testTask.getName(), "Задается некорректное значение имени!");
         assertEquals("taskName", testTask.getName());
         // проверяем сеттер описания
         testTask.setDescription(null);

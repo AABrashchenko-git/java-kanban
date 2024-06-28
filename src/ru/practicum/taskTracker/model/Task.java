@@ -28,9 +28,7 @@ public class Task {
     }
 
     public void setId(int id) {
-        if (id >= InMemoryTaskManager.getTaskCounter()) {
-            this.id = id;
-        }
+        this.id = id;
     }
 
     public String getName() {
