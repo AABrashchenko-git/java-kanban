@@ -5,85 +5,77 @@ import ru.practicum.taskTracker.model.*;
 import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    static class Node<T> {
-        Task task;
-        Node<T> prev;
-        Node<T> next;
+    // Решил все-таки сделать вложенный класс
+    static class HistoryLinkedList {
+        private Node head;
+        private Node tail;
+        private final Map<Integer, Node> historyMap = new HashMap<>();
 
-        public Node(Task task, Node<T> prev, Node<T> next) {
-            this.task = task;
-            this.prev = prev;
-            this.next = next;
+        private void linkLast(Task task) {
+            if (historyMap.containsKey(task.getId())) {
+                removeNode(historyMap.get(task.getId()));
+            }
+            Node oldTail = tail;
+            Node newNode = new Node(task, tail, null);
+            tail = newNode;
+            if (oldTail == null) {
+                head = newNode;
+            } else {
+                oldTail.setNext(newNode);
+            }
+            historyMap.put(task.getId(), newNode);
         }
 
-        public Task getTaskOfNode() {
-            return task;
+        private void removeNode(Node nodeToRemove) {
+            if (nodeToRemove == tail && nodeToRemove == head) {
+                tail = null;
+                head = null;
+            } else if (nodeToRemove.getNext() == null) { // Если узел - конец
+                tail = nodeToRemove.getPrev();
+                tail.setNext(null);
+            } else if (nodeToRemove.getPrev() == null) { // Если узел - начало
+                head = nodeToRemove.getNext();
+                head.setPrev(null);
+            } else {
+                nodeToRemove.getPrev().setNext(nodeToRemove.getNext());
+                nodeToRemove.getNext().setPrev(nodeToRemove.getPrev());
+            }
         }
 
+        private List<Task> getTasks() {
+            List<Task> taskHistory = new LinkedList<>();
+            Node currentNode = head;
+            while (currentNode != null) {
+                taskHistory.add(currentNode.getTaskOfNode());
+                currentNode = currentNode.getNext();
+            }
+            return taskHistory;
+        }
+
+        public Map<Integer, Node> getHistoryMap() {
+            return historyMap;
+        }
     }
 
-    private Node<Task> head;
-    private Node<Task> tail;
-    private final Map<Integer, Node<Task>> historyMap = new HashMap<>();
+    HistoryLinkedList historyLinkedList = new HistoryLinkedList();
 
     @Override
     public void add(Task task) {
-        linkLast(task);
+        historyLinkedList.linkLast(task);
     }
 
     @Override
     public List<Task> getHistory() {
-        return getTasks();
+        return historyLinkedList.getTasks();
     }
 
     @Override
     public void remove(int id) {
-        Node<Task> nodeToRemove = historyMap.remove(id);
+        Node nodeToRemove = historyLinkedList.getHistoryMap().remove(id);
         if (nodeToRemove == null) {
             return;
         }
-        removeNode(nodeToRemove);
-    }
-
-    public void linkLast(Task task) {
-        if (historyMap.containsKey(task.getId())) {
-            removeNode(historyMap.get(task.getId()));
-        }
-        Node<Task> oldTail = tail;
-        Node<Task> newNode = new Node<>(task, tail, null);
-        tail = newNode;
-        if (oldTail == null) {
-            head = newNode;
-        } else {
-            oldTail.next = newNode;
-        }
-        historyMap.put(task.getId(), newNode);
-    }
-
-    private void removeNode(Node<Task> nodeToRemove) {
-        if (nodeToRemove == tail && nodeToRemove == head) {
-            tail = null;
-            head = null;
-        } else if (nodeToRemove.next == null) { // Если узел - конец
-            tail = nodeToRemove.prev;
-            tail.next = null;
-        } else if (nodeToRemove.prev == null) { // Если узел - начало
-            head = nodeToRemove.next;
-            head.prev = null;
-        } else {
-            nodeToRemove.prev.next = nodeToRemove.next;
-            nodeToRemove.next.prev = nodeToRemove.prev;
-        }
-    }
-
-    private List<Task> getTasks() {
-        List<Task> taskHistory = new LinkedList<>();
-        Node<Task> currentNode = head;
-        while (currentNode != null) {
-            taskHistory.add(currentNode.getTaskOfNode());
-            currentNode = currentNode.next;
-        }
-        return taskHistory;
+        historyLinkedList.removeNode(nodeToRemove);
     }
 
 }

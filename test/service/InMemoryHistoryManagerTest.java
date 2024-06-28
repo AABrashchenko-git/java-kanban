@@ -12,13 +12,22 @@ import static org.junit.jupiter.api.Assertions.*;
 class InMemoryHistoryManagerTest {
 
     private TaskManager manager;
+    private Task testTask;
+    private Epic testEpic;
+    private SubTask testSubTask;
 
     @BeforeEach
     public void beforeEach() {
         manager = Managers.getDefault();
+        testTask = new Task("taskName", "testDescription");
+        manager.addTask(testTask);
+        testEpic = new Epic("epicName", "epicTestDescription");
+        manager.addEpic(testEpic);
+        testSubTask = new SubTask(testEpic.getId(), "subTaskName", "subTestDescription");
+        manager.addSubTask(testSubTask);
     }
 
-    // Исправляем старые тесты - новые под новую функциональность
+    // Исправляем старые тесты - создаем новые под новую функциональность
     @Test
     void ensureHistoryCapacityIsNotLimited() {
         // Создаем 15 задач и проверяем, что в списке истории могут храниться больше 10 задач
@@ -33,9 +42,7 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void ensureHistoryShouldRemoveAndReplaceOldTaskAfterUpdate() {
-        // Добавляем задачу:
-        Task testTask = new Task("taskName", "testDescription");
-        manager.addTask(testTask);
+        // Получаем задачу:
         Task oldTask = manager.getTaskById(testTask.getId()); // ушло в историю
         // Проверяем, что в истории в действительности присутствует данная задача
         assertEquals(manager.getHistory().get(0), oldTask,
@@ -54,9 +61,7 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void ensureHistoryShouldRemoveAndReplaceOldEpicAfterUpdate() {
-        // Аналогично для эпиков. Добавляем эпик:
-        Epic testEpic = new Epic("epicName", "epicTestDescription");
-        manager.addEpic(testEpic);
+        // Аналогично для эпиков. Получаем эпик:
         Epic oldEpic = manager.getEpicById(testEpic.getId()); // ушел в историю
         // Проверяем, что в истории в действительности присутствует данный эпик
         assertEquals(manager.getHistory().get(0), oldEpic,
@@ -75,11 +80,7 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void ensureHistoryShouldRemoveAndReplaceOldSubTaskAfterUpdate() {
-        // Аналогично для сабтасок. Добавляем эпик и сабтаску:
-        Epic testEpic = new Epic("epicName", "epicTestDescription");
-        manager.addEpic(testEpic);
-        SubTask testSubTask = new SubTask(testEpic.getId(), "subTaskName", "subTestDescription");
-        manager.addSubTask(testSubTask);
+        // Аналогично для сабтасок. Получаем сабтаску:
         SubTask oldSubTask = manager.getSubTaskById(testSubTask.getId()); // подзадача ушла в историю
         // Проверяем, что в истории в действительности присутствует данная подзадача
         assertEquals(manager.getHistory().get(0), oldSubTask,
@@ -103,10 +104,7 @@ class InMemoryHistoryManagerTest {
     // 1. Проверяем, что история не сохраняет дубликаты задач при добавлении
     @Test
     void ensureHistoryShouldNotKeepCopyOfTask() {
-
         //1. Задачи
-        Task testTask = new Task("taskName", "testDescription");
-        manager.addTask(testTask);
         Task sameTask1 = manager.getTaskById(testTask.getId());
         Task sameTask2 = manager.getTaskById(testTask.getId());
         assertEquals(1, manager.getHistory().size());
@@ -115,8 +113,6 @@ class InMemoryHistoryManagerTest {
     @Test
     void ensureHistoryShouldNotKeepCopyOfEpic() {
         // 2. Эпики
-        Epic testEpic = new Epic("epicName", "epicTestDescription");
-        manager.addEpic(testEpic);
         Epic sameEpic1 = manager.getEpicById(testEpic.getId());
         Epic sameEpic2 = manager.getEpicById(testEpic.getId());
         assertEquals(1, manager.getHistory().size());
@@ -125,10 +121,6 @@ class InMemoryHistoryManagerTest {
     @Test
     void ensureHistoryShouldNotKeepCopyOfSubTask() {
         // 3. Подзадачи
-        Epic testEpic = new Epic("epicName", "epicTestDescription");
-        manager.addEpic(testEpic);
-        SubTask testSubTask = new SubTask(testEpic.getId(), "subTaskName", "subTestDescription");
-        manager.addSubTask(testSubTask);
         SubTask sameEpic1 = manager.getSubTaskById(testSubTask.getId());
         SubTask sameEpic2 = manager.getSubTaskById(testSubTask.getId());
         assertEquals(1, manager.getHistory().size());
@@ -137,13 +129,7 @@ class InMemoryHistoryManagerTest {
     // 2. Проверяем, что история удалает задачи после удаления их из списка
     @Test
     void ensureHistoryShouldNotContainAnyKindOfTaskAfterRemoval() {
-        // Создаем задачи, добаляем, просматриваем и удаляем
-        Task testTask = new Task("taskName", "testDescription");
-        manager.addTask(testTask);
-        Epic testEpic = new Epic("epicName", "epicTestDescription");
-        manager.addEpic(testEpic);
-        SubTask testSubTask = new SubTask(testEpic.getId(), "subTaskName", "subTestDescription");
-        manager.addSubTask(testSubTask);
+        //  просматриваем и удаляем задачи
         SubTask subTask = manager.getSubTaskById(testSubTask.getId());
         Epic epic = manager.getEpicById(testEpic.getId());
         Task task = manager.getTaskById((testTask.getId()));
@@ -162,18 +148,12 @@ class InMemoryHistoryManagerTest {
     // 3. Проверим корректность работы созданного связного списка
     @Test
     void ensureHistoryContainsCorrectOrderWhenAddingTasks() {
-        // Создаем задачи, добаляем
-        Task testTask = new Task("taskName", "testDescription");
+        // Создаем дополнительные задачи, добаляем
         Task testTask2 = new Task("taskName2", "testDescription2");
-        manager.addTask(testTask);
         manager.addTask(testTask2);
-        Epic testEpic = new Epic("epicName", "epicTestDescription");
         Epic testEpic2 = new Epic("epicName2", "epicTestDescription2");
-        manager.addEpic(testEpic);
         manager.addEpic(testEpic2);
-        SubTask testSubTask = new SubTask(testEpic.getId(), "subTaskName", "subTestDescription");
         SubTask testSubTask2 = new SubTask(testEpic2.getId(), "subTaskName2", "subTestDescription2");
-        manager.addSubTask(testSubTask);
         manager.addSubTask(testSubTask2);
         // просматриваем
         Task task = manager.getTaskById((testTask.getId()));
