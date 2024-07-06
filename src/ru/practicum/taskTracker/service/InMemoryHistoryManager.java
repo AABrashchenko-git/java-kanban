@@ -5,7 +5,6 @@ import ru.practicum.taskTracker.model.*;
 import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    // Решил все-таки сделать вложенный класс
     static class HistoryLinkedList {
         private Node head;
         private Node tail;
