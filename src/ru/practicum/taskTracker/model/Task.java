@@ -34,9 +34,7 @@ public class Task {
     }
 
     public void setName(String name) {
-        // Нашел такую штуку, чтобы вводимая строка соответствовала регулярному
-        // выражению (строки, пробелы, символы и тд), если есть другие подходы - буду признателен, если поделишься :)
-        if (name != null && (name.length() > 1) && name.matches("^[\\p{L}\\p{N}\\s\\p{P}]+$")) {
+        if (name != null && !name.isBlank() && !name.isEmpty()) {
             this.name = name;
         }
     }
@@ -46,8 +44,7 @@ public class Task {
     }
 
     public void setDescription(String description) {
-        if (description != null && (description.length() > 1)
-                && description.matches("^[\\p{L}\\p{N}\\s\\p{P}]+$")) {
+        if (description != null && !description.isBlank() && !description.isEmpty()) {
             this.description = description;
         }
     }
