@@ -2,6 +2,7 @@ package ru.practicum.taskTracker.model;
 
 public class SubTask extends Task {
     private int epicId;
+    private final Type type = Type.SUBTASK;
 
     public SubTask(int epicId, String name, String description) {
         super(name, description);
@@ -20,6 +21,10 @@ public class SubTask extends Task {
 
     private void setEpicId(int epicId) {
         this.epicId = epicId;
+    }
+
+    public Type getType() {
+        return type;
     }
 
     @Override

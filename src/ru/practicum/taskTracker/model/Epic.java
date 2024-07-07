@@ -1,9 +1,12 @@
 package ru.practicum.taskTracker.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Epic extends Task {
     private final ArrayList<SubTask> subTaskArrayList = new ArrayList<>();
+    private final List<Integer> subtasksIds = new ArrayList<>();
+    private final Type type = Type.EPIC;
 
     public Epic(String name, String description) {
         super(name, description);
@@ -19,8 +22,13 @@ public class Epic extends Task {
         return subTaskArrayList;
     }
 
+    public List<Integer> getSubTasksIds() {
+        return subtasksIds;
+    }
+
     public void addSubTaskToList(SubTask subTask) {
         subTaskArrayList.add(subTask);
+        subtasksIds.add(subTask.getId());
     }
 
     public void replaceElementInSubTaskList(SubTask subTask) {
@@ -28,8 +36,13 @@ public class Epic extends Task {
             if (subTask.getId() == subTaskFromList.getId()) {
                 int index = subTaskArrayList.indexOf(subTaskFromList);
                 subTaskArrayList.set(index, subTask);
+                subtasksIds.set(index, subTask.getId());
             }
         }
+    }
+
+    public Type getType() {
+        return type;
     }
 
     @Override
