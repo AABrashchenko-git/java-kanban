@@ -76,7 +76,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         System.out.println("\nИстория, восстановленная из файла:");
         System.out.println("___________________________________");
         System.out.println(newManager.getHistory());
-
     }
 
     @Override

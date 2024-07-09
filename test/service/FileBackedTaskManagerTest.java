@@ -45,7 +45,6 @@ public class FileBackedTaskManagerTest {
         assertEquals(Collections.emptyList(), manager.getAllEpics());
         assertEquals(Collections.emptyList(), manager.getAllSubTasks());
         assertEquals(Collections.emptyList(), manager.getHistory());
-
     }
 
     // Проверить сохранение нескольких задач;

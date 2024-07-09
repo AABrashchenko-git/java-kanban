@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Epic extends Task {
+    // Ранее в ревью ты предлагал в классе Epic оставить либо список подзадач эпика, либо список ID сабтасок
+    // Сначала я оставил список сабтасок, но сейчас решил поменять на список id, легче реализовать восстановление истории
+    // Логику соответствующих методов, использующих список подзадач эпика, подправил
     private final List<Integer> subTasksIdList = new ArrayList<>();
     private final Type type = Type.EPIC;
 
@@ -41,7 +44,8 @@ public class Epic extends Task {
             }
         }
         epicInfo.append("\b\b\n [ID эпика: ").append(this.getId()).append("; Имя эпика: ").append(this.getName());
-        epicInfo.append(". Описание: ").append(this.getDescription()).append(". Текущий статус: ").append(this.getStatus());
+        epicInfo.append(". Описание: ").append(this.getDescription());
+        epicInfo.append(". Текущий статус: ").append(this.getStatus());
         epicInfo.append(". ID текущих подзадач: ").append(subTaskInfo).append("]");
         return epicInfo.toString();
     }
