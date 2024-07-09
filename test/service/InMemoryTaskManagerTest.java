@@ -114,7 +114,7 @@ class InMemoryTaskManagerTest {
         assertNull(removedSubTask,
                 "Удаленную подзадачу можно получить по id!");
         // Проверяем, что эпик больше не содержит неактуальную удаленную подзадачу
-        assertEquals(0, testEpic.getSubTasksList().size(),
+        assertEquals(0, testEpic.getSubTasksIdList().size(),
                 "Удаленная подзадача содержится в эпике!");
         // Проверяем, что подзадача с данным id больше не хранится в истории
         for (Task subTaskInHistory : manager.getHistory()) {

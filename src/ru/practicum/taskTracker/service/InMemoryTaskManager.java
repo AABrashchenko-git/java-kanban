@@ -189,16 +189,13 @@ public class InMemoryTaskManager implements TaskManager {
             return;
         }
         Epic epic = allEpics.get(epicId);
-        for (SubTask subTask : allSubTasks.values()) {
-            if (subTask.getEpicId() == epic.getId()) {
-                allSubTasks.remove(subTask.getId());
-            }
-            historyManager.remove(subTask.getId());
+        for (Integer subTaskId : epic.getSubTasksIdList()) {
+            allSubTasks.remove(subTaskId);
+            historyManager.remove(subTaskId);
         }
         epic.getSubTasksIdList().clear();
         historyManager.remove(epic.getId());
         allEpics.remove(epicId);
-
     }
 
     // 3) Подзадачи
@@ -209,7 +206,7 @@ public class InMemoryTaskManager implements TaskManager {
             return;
         }
         Epic epic = allEpics.get(subTask.getEpicId());
-        epic.getSubTasksIdList().remove(subTask.getId());
+        epic.getSubTasksIdList().remove((Object) subTask.getId());
         allSubTasks.remove(subTaskId);
         historyManager.remove(subTask.getId());
         epic.setStatus(getUpdatedEpicStatus(epic));

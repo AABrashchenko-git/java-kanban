@@ -34,7 +34,7 @@ public class Epic extends Task {
         StringBuilder subTaskInfo = new StringBuilder();
         StringBuilder epicInfo = new StringBuilder();
         if (subTasksIdList.isEmpty()) {
-            subTaskInfo.append("-- Список подзадач на данный момент пуст или удалён.");
+            subTaskInfo.append("--> Список подзадач на данный момент пуст или удалён.");
         } else {
             for (Integer id : this.getSubTasksIdList()) {
                 subTaskInfo.append(id).append(",");
