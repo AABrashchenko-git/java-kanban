@@ -7,6 +7,7 @@ public class Task {
     private String name;
     private String description;
     private Status status;
+    private final Type type = Type.TASK;
 
     public Task(String name, String description) {
         this.name = name;
@@ -57,6 +58,10 @@ public class Task {
         if (status != null) {
             this.status = status;
         }
+    }
+
+    public Type getType() {
+        return type;
     }
 
     @Override

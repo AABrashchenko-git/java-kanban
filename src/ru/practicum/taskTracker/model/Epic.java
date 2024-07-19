@@ -1,9 +1,14 @@
 package ru.practicum.taskTracker.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Epic extends Task {
-    private final ArrayList<SubTask> subTaskArrayList = new ArrayList<>();
+    // Ранее в ревью ты предлагал в классе Epic оставить либо список подзадач эпика, либо список ID сабтасок
+    // Сначала я оставил список сабтасок, но сейчас решил поменять на список id, легче реализовать восстановление истории
+    // Логику соответствующих методов, использующих список подзадач эпика, подправил
+    private final List<Integer> subTasksIdList = new ArrayList<>();
+    private final Type type = Type.EPIC;
 
     public Epic(String name, String description) {
         super(name, description);
@@ -15,48 +20,33 @@ public class Epic extends Task {
         this.setId(id);
     }
 
-    public ArrayList<SubTask> getSubTasksList() {
-        return subTaskArrayList;
+    public List<Integer> getSubTasksIdList() {
+        return subTasksIdList;
     }
 
-    public void addSubTaskToList(SubTask subTask) {
-        subTaskArrayList.add(subTask);
+    public void addSubTaskIdToList(int subTaskId) {
+        subTasksIdList.add(subTaskId);
     }
 
-    public void replaceElementInSubTaskList(SubTask subTask) {
-        for (SubTask subTaskFromList : subTaskArrayList) {
-            if (subTask.getId() == subTaskFromList.getId()) {
-                int index = subTaskArrayList.indexOf(subTaskFromList);
-                subTaskArrayList.set(index, subTask);
-            }
-        }
+    public Type getType() {
+        return type;
     }
 
     @Override
     public String toString() {
-        int i = 1;
         StringBuilder subTaskInfo = new StringBuilder();
         StringBuilder epicInfo = new StringBuilder();
-        if (subTaskArrayList.isEmpty()) {
-            subTaskInfo.append("\n\t -- Список подзадач на данный момент пуст или удалён.");
+        if (subTasksIdList.isEmpty()) {
+            subTaskInfo.append("--> Список подзадач на данный момент пуст или удалён.");
         } else {
-            for (SubTask subTask : this.getSubTasksList()) {
-                subTaskInfo.append("\n\t");
-                subTaskInfo.append(i);
-                subTaskInfo.append(". ID подзадачи: ");
-                subTaskInfo.append(subTask.getId());
-                subTaskInfo.append(". Имя подзадачи: ");
-                subTaskInfo.append(subTask.getName());
-                subTaskInfo.append(". Описание: ");
-                subTaskInfo.append(subTask.getDescription());
-                subTaskInfo.append(". Статус: ");
-                subTaskInfo.append(subTask.getStatus());
-                i++;
+            for (Integer id : this.getSubTasksIdList()) {
+                subTaskInfo.append(id).append(",");
             }
         }
         epicInfo.append("\b\b\n [ID эпика: ").append(this.getId()).append("; Имя эпика: ").append(this.getName());
-        epicInfo.append(". Описание: ").append(this.getDescription()).append(". Текущий статус: ").append(this.getStatus());
-        epicInfo.append(". Текущие подзадачи: ").append(subTaskInfo).append("]");
+        epicInfo.append(". Описание: ").append(this.getDescription());
+        epicInfo.append(". Текущий статус: ").append(this.getStatus());
+        epicInfo.append(". ID текущих подзадач: ").append(subTaskInfo).append("]");
         return epicInfo.toString();
     }
 }
