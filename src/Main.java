@@ -6,8 +6,8 @@ import java.io.File;
 public class Main {
     public static void main(String[] args) {
         // Пользовательский сценарий
-        File taskStorage = new File("src/ru/practicum/taskTracker/resources", "tasks.csv");
-        TaskManager manager = Managers.getFileBackedManager(taskStorage);
+        File taskStorage = new File("src/resources", "tasks.csv");
+        TaskManager manager = Managers.getFileBackedManager();
 
         // 1. Заведите несколько разных задач, эпиков и подзадач
         Task task1 = new Task("имяЗадачи1", "описаниеЗадачи1");
