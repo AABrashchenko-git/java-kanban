@@ -5,6 +5,9 @@ import ru.practicum.taskTracker.exceptions.FileBackedTaskManagerOutputException;
 import ru.practicum.taskTracker.model.*;
 
 import java.io.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -125,18 +128,22 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     // Метод сохранения задачи в строку
     public String toString(Task task) {
         StringBuilder taskToString = new StringBuilder(String.format("%s,%s,%s,%s,%s", task.getId(), task.getType(),
-                task.getStatus(), task.getName(), task.getDescription()));
-
+                task.getStatus(), task.getName(), task.getDescription())).append(",");
         switch (task.getType()) {
             case SUBTASK:
-                taskToString.append(",").append(((SubTask) task).getEpicId());
+                taskToString.append(((SubTask) task).getEpicId());
                 break;
             case EPIC:
-                taskToString.append(",");
                 for (Integer subTaskId : ((Epic) task).getSubTasksIdList()) {
                     taskToString.append("st").append(subTaskId);
                 }
                 break;
+        }
+        if (task.getStartTime() != null && task.getDuration() != null) {
+            String startTime = task.getStartTime().format(DateTimeFormatter.ofPattern("yyyy.MM.dd|HH:mm"));
+            long duration = task.getDuration().toMinutes();
+
+            taskToString.append(",").append(startTime).append(",").append(duration);
         }
         return taskToString.append("\n").toString();
     }
@@ -176,10 +183,20 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         Status status = Status.valueOf(elements[2]);
         String name = elements[3];
         String description = elements[4];
+        LocalDateTime startTime = null;
+        Duration duration = null;
+        // Индикатор наличия полей, связанных с временем, с учётом наличия\отсутствия у эпика подзадач:
+        if (elements.length > 6) {
+            duration = Duration.ofMinutes(Long.parseLong(elements[elements.length - 1]));
+            startTime = LocalDateTime.parse(elements[elements.length - 2],
+                    DateTimeFormatter.ofPattern("yyyy.MM.dd|HH:mm"));
+        }
 
         switch (elements[1]) {
             case "SUBTASK":
                 int epicId = Integer.parseInt(elements[5]);
+                if (startTime != null && duration != null)
+                    return new SubTask(epicId, taskId, name, description, status, startTime, duration);
                 return new SubTask(epicId, taskId, name, description, status);
             case "EPIC":
                 Epic epic = new Epic(taskId, name, description);
@@ -191,8 +208,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                         epic.getSubTasksIdList().add(Integer.parseInt(string));
                     }
                 }
+                if (startTime != null && duration != null) {
+                    epic.setStartTime(startTime);
+                    epic.setDuration(duration);
+                }
                 return epic;
             default:
+                if (startTime != null && duration != null)
+                    return new Task(taskId, name, description, status, startTime, duration);
                 return new Task(taskId, name, description, status);
         }
     }

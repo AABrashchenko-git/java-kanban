@@ -2,6 +2,8 @@ package ru.practicum.taskTracker.service;
 
 import ru.practicum.taskTracker.model.*;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -10,6 +12,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected final Map<Integer, Task> allTasks = new HashMap<>();
     protected final Map<Integer, Epic> allEpics = new HashMap<>();
     protected final Map<Integer, SubTask> allSubTasks = new HashMap<>();
+    protected final Set<Task> allTasksPrior = new TreeSet<>(Comparator.comparing(Task::getEndTime));
 
     // Методы для каждого из типа задач(Задача/Эпик/Подзадача):
     // d. Создание. Сам объект должен передаваться в качестве параметра.
@@ -39,6 +42,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         epic.addSubTaskIdToList(subTask.getId());
         epic.setStatus(getUpdatedEpicStatus(epic));
+        updateEpicTime(epic);
         return subTask;
     }
 
@@ -80,6 +84,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         allSubTasks.replace(subTask.getId(), subTask);
         epicOfSubTask.setStatus(getUpdatedEpicStatus(epicOfSubTask));
+        updateEpicTime(epicOfSubTask);
         return subTask;
     }
 
@@ -168,6 +173,7 @@ public class InMemoryTaskManager implements TaskManager {
         for (Epic epic : allEpics.values()) {
             epic.getSubTasksIdList().clear();
             epic.setStatus(getUpdatedEpicStatus(epic));
+            updateEpicTime(epic);
         }
     }
 
@@ -210,6 +216,7 @@ public class InMemoryTaskManager implements TaskManager {
         allSubTasks.remove(subTaskId);
         historyManager.remove(subTask.getId());
         epic.setStatus(getUpdatedEpicStatus(epic));
+        updateEpicTime(epic);
     }
 
     // Получение всех подзадач эпика
@@ -270,6 +277,24 @@ public class InMemoryTaskManager implements TaskManager {
             return Status.DONE;
         } else {
             return Status.IN_PROGRESS;
+        }
+    }
+
+    public void updateEpicTime(Epic epic) {
+        List<SubTask> subTasksSortedByEndTime = getAllSubTaskOfEpic(epic.getId()).stream()
+                .filter(subTask -> (subTask.getStartTime() != null && subTask.getEndTime() != null))
+                .sorted(Comparator.comparing(SubTask::getEndTime)).toList();
+        List<SubTask> subTasksSortedByStartTime = getAllSubTaskOfEpic(epic.getId()).stream()
+                .filter(subTask -> (subTask.getStartTime() != null && subTask.getEndTime() != null))
+                .sorted(Comparator.comparing(SubTask::getStartTime)).toList();
+
+        if(!subTasksSortedByStartTime.isEmpty() && !subTasksSortedByEndTime.isEmpty()) {
+            LocalDateTime epicStartTime = subTasksSortedByStartTime.getFirst().getStartTime();
+            LocalDateTime epicEndTime = subTasksSortedByEndTime.getLast().getEndTime();
+            Duration epicDuration = Duration.between(epicStartTime, epicEndTime);
+            epic.setStartTime(epicStartTime);
+            epic.setEndTime(epicEndTime);
+            epic.setDuration(epicDuration);
         }
     }
 

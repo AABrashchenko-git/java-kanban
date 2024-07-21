@@ -1,5 +1,7 @@
 package ru.practicum.taskTracker.model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task {
@@ -8,6 +10,8 @@ public class Task {
     private String description;
     private Status status;
     private final Type type = Type.TASK;
+    private Duration duration;
+    private LocalDateTime startTime;
 
     public Task(String name, String description) {
         this.name = name;
@@ -20,6 +24,25 @@ public class Task {
         this.name = name;
         this.description = description;
         this.status = status;
+    }
+
+    // Конструктор для создания
+    public Task(String name, String description, LocalDateTime startTime, Duration duration) {
+        this.name = name;
+        this.description = description;
+        this.startTime = startTime;
+        this.duration = duration;
+        this.status = Status.NEW;
+    }
+
+    // Конструктор для обновления
+    public Task(int id, String name, String description, Status status, LocalDateTime startTime, Duration duration) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.startTime = startTime;
+        this.duration = duration;
     }
 
     public int getId() {
@@ -64,6 +87,26 @@ public class Task {
         return type;
     }
 
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return startTime.plus(duration);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -88,6 +131,10 @@ public class Task {
         taskInfo.append(this.getDescription());
         taskInfo.append(", текущий статус задачи: ");
         taskInfo.append(this.getStatus());
+        if (this.startTime != null && this.duration != null) {
+            taskInfo.append(", время начала задачи: ").append(this.getStartTime())
+                    .append(", время окончания задачи: ").append(this.getEndTime());
+        }
         taskInfo.append("]");
         return taskInfo.toString();
     }

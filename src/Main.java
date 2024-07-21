@@ -2,16 +2,19 @@ import ru.practicum.taskTracker.model.*;
 import ru.practicum.taskTracker.service.*;
 
 import java.io.File;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class Main {
     public static void main(String[] args) {
-        // Пользовательский сценарий
+        // Пользовательский сценарий для ТЗ-8, добавляются задачи с учетом времени и обычные
         File taskStorage = new File("src/resources", "tasks.csv");
         TaskManager manager = Managers.getFileBackedManager();
 
         // 1. Заведите несколько разных задач, эпиков и подзадач
         Task task1 = new Task("имяЗадачи1", "описаниеЗадачи1");
-        Task task2 = new Task("имяЗадачи2", "описаниеЗадачи2");
+        Task task2 = new Task("имяЗадачи2", "описаниеЗадачи2",
+                LocalDateTime.now(), Duration.ofMinutes(30));
         manager.addTask(task1);
         manager.addTask(task2);
         Epic epic1 = new Epic("имяЭпика1", "описаниеЭпика1");
@@ -21,12 +24,17 @@ public class Main {
         SubTask subTask1 = new SubTask(epic1.getId(), "имяПодзадачи1Эпика1",
                 "описаниеПодзадачи1Эпика1");
         SubTask subTask2 = new SubTask(epic1.getId(), "имяПодзадачи2Эпика1",
-                "описаниеПодзадачи2Эпика1");
+                "описаниеПодзадачи2Эпика1", LocalDateTime.now().plusMinutes(10), Duration.ofMinutes(90));
         SubTask subTask3 = new SubTask(epic1.getId(), "имяПодзадачи3Эпика1",
-                "описаниеПодзадачи1Эпика2");
+                "описаниеПодзадачи1Эпика2", LocalDateTime.now().plusMinutes(15), Duration.ofMinutes(60));
         manager.addSubTask(subTask1);
         manager.addSubTask(subTask2);
         manager.addSubTask(subTask3);
+
+        System.out.println("EPIC1 TIME INFO");
+        System.out.println(epic1.getStartTime());
+        System.out.println(epic1.getDuration());
+        System.out.println(epic1.getEndTime());
 
         // Получим задачи, чтобы добавить их в историю
         manager.getTaskById(task1.getId());
