@@ -5,6 +5,7 @@ import ru.practicum.taskTracker.model.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
     private int taskCounter;
@@ -12,7 +13,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected final Map<Integer, Task> allTasks = new HashMap<>();
     protected final Map<Integer, Epic> allEpics = new HashMap<>();
     protected final Map<Integer, SubTask> allSubTasks = new HashMap<>();
-    protected final Set<Task> allTasksPrior = new TreeSet<>(Comparator.comparing(Task::getEndTime));
+    protected final Set<Task>  prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
 
     // Методы для каждого из типа задач(Задача/Эпик/Подзадача):
     // d. Создание. Сам объект должен передаваться в качестве параметра.
@@ -20,6 +21,8 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task addTask(Task task) {
         task.setId(getNextId());
+        if(task.getStartTime()!=null)
+            addPrioritizedTask(task);
         return allTasks.put(task.getId(), task);
     }
 
@@ -43,6 +46,8 @@ public class InMemoryTaskManager implements TaskManager {
         epic.addSubTaskIdToList(subTask.getId());
         epic.setStatus(getUpdatedEpicStatus(epic));
         updateEpicTime(epic);
+        if(subTask.getStartTime()!=null)
+            addPrioritizedTask(subTask);
         return subTask;
     }
 
@@ -70,7 +75,8 @@ public class InMemoryTaskManager implements TaskManager {
         for (Integer subTaskEpicId : currentEpic.getSubTasksIdList()) {
             epic.addSubTaskIdToList(subTaskEpicId);
         }
-
+        // TEST
+        //currentEpic.getSubTasksIdList().forEach(epic::addSubTaskIdToList);
         return epic;
     }
 
@@ -296,6 +302,33 @@ public class InMemoryTaskManager implements TaskManager {
             epic.setEndTime(epicEndTime);
             epic.setDuration(epicDuration);
         }
+    }
+
+    @Override
+    public Set<Task> getPrioritizedTasks() {
+          return prioritizedTasks;
+    }
+
+    public void addPrioritizedTask(Task taskToAdd) {
+        boolean isValid = getPrioritizedTasks()
+                .stream().filter(task -> isOverlapping(taskToAdd, task)).toList().isEmpty();
+        if(isValid)
+            prioritizedTasks.add(taskToAdd);
+    }
+    public boolean isOverlapping(Task task1, Task task2) {
+        // task1 начинается раньше task2, но task2 кончается после task1
+        boolean isOverlappingByEnd = task1.getStartTime().isBefore(task2.getStartTime())
+                && task1.getEndTime().isAfter(task2.getStartTime()) && task1.getEndTime().isBefore(task2.getEndTime());
+        // task1 начинается позже task2, но task2 кончается раньше task1
+        boolean isOverlappingByStart  = task1.getStartTime().isAfter(task2.getStartTime())
+                && task1.getEndTime().isAfter(task2.getEndTime()) && task1.getStartTime().isBefore(task2.getEndTime());
+        // task1 и task2 находятся одна внутри другой
+        boolean areTasksWithin = (task1.getStartTime().isAfter(task2.getStartTime()) && task1.getEndTime().isBefore(task2.getEndTime()))
+                || (task1.getStartTime().isBefore(task2.getStartTime()) && task1.getEndTime().isAfter(task2.getEndTime()));
+        // временные интервалы у task1 и task2 совпадают
+        boolean areTasksTimesEqual = task1.getStartTime().equals(task2.getStartTime()) && task1.getEndTime().equals(task2.getEndTime());
+
+        return isOverlappingByEnd || isOverlappingByStart || areTasksWithin || areTasksTimesEqual;
     }
 
 }

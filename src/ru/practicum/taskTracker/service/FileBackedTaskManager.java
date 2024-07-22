@@ -134,6 +134,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 taskToString.append(((SubTask) task).getEpicId());
                 break;
             case EPIC:
+                if(((Epic) task).getSubTasksIdList().isEmpty())
+                    taskToString.append("st").append(0);
                 for (Integer subTaskId : ((Epic) task).getSubTasksIdList()) {
                     taskToString.append("st").append(subTaskId);
                 }
@@ -185,13 +187,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         String description = elements[4];
         LocalDateTime startTime = null;
         Duration duration = null;
-        // Индикатор наличия полей, связанных с временем, с учётом наличия\отсутствия у эпика подзадач:
+        // Индикатор наличия полей, связанных с временем:
         if (elements.length > 6) {
             duration = Duration.ofMinutes(Long.parseLong(elements[elements.length - 1]));
             startTime = LocalDateTime.parse(elements[elements.length - 2],
                     DateTimeFormatter.ofPattern("yyyy.MM.dd|HH:mm"));
         }
-
         switch (elements[1]) {
             case "SUBTASK":
                 int epicId = Integer.parseInt(elements[5]);
@@ -201,9 +202,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
             case "EPIC":
                 Epic epic = new Epic(taskId, name, description);
                 epic.setStatus(status);
-                if (elements.length == 6) { // если у эпика существуют подзадачи
-                    elements[5] = elements[5].substring(2);
-                    String[] subTasks = elements[5].split("st");
+                elements[5] = elements[5].substring(2);
+                String[] subTasks = elements[5].split("st");
+                if(!subTasks[0].equals("0")) {
                     for (String string : subTasks) {
                         epic.getSubTasksIdList().add(Integer.parseInt(string));
                     }
@@ -211,6 +212,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 if (startTime != null && duration != null) {
                     epic.setStartTime(startTime);
                     epic.setDuration(duration);
+                    epic.setEndTime(startTime.plus(duration));
                 }
                 return epic;
             default:
@@ -238,11 +240,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 if (!isHistory) {
                     if (newTask instanceof SubTask) {
                         manager.allSubTasks.put(newTask.getId(), (SubTask) newTask);
+                        if(newTask.getStartTime() != null) manager.addPrioritizedTask(newTask);
                     } else if (newTask instanceof Epic) {
                         Epic epic = (Epic) newTask;
                         manager.allEpics.put(epic.getId(), epic);
                     } else {
                         manager.allTasks.put(newTask.getId(), newTask);
+                        if(newTask.getStartTime() != null) manager.addPrioritizedTask(newTask);
                     }
                 } else {
                     historyList.add(newTask);

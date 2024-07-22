@@ -73,6 +73,11 @@ public class Main {
         System.out.println("\nИстория, восстановленная из файла:");
         System.out.println("___________________________________");
         System.out.println(newManager.getHistory());
+
+        System.out.println("\nЗадачи по приоритету исходного менеджера");
+        System.out.println(manager.getPrioritizedTasks());
+        System.out.println("\nЗадачи по приоритету восстановленного менеджера");
+        System.out.println(newManager.getPrioritizedTasks());
     }
 
 }
