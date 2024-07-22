@@ -78,6 +78,14 @@ public class Main {
         System.out.println(manager.getPrioritizedTasks());
         System.out.println("\nЗадачи по приоритету восстановленного менеджера");
         System.out.println(newManager.getPrioritizedTasks());
+
+        System.out.println("\nTEST TEST TEST TEST");
+        System.out.println(newManager.getAllEpics());
+        System.out.println(newManager.getAllSubTaskOfEpic(epic1.getId()));
+        newManager.updateEpic(new Epic(epic1.getId(), "TESTNAME999", "TESTDESCRIPTION999"));
+        //newManager.removeOneEpicById(epic1.getId());
+        System.out.println(newManager.getAllEpics());
+        System.out.println(newManager.getAllSubTaskOfEpic(epic1.getId()));
     }
 
 }
