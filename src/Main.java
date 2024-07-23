@@ -82,13 +82,40 @@ public class Main {
         System.out.println("\nTEST TEST TEST TEST");
         System.out.println(newManager.getAllEpics());
         System.out.println(newManager.getAllSubTaskOfEpic(epic1.getId()));
+
         newManager.updateEpic(new Epic(epic1.getId(), "TESTNAME999", "TESTDESCRIPTION999"));
+       newManager.updateSubTask(new SubTask(subTask1.getEpicId(), subTask1.getId(), "newИмяПодзадачи1Эпика1",
+               "newОписаниеПодзадачи1Эпика1", Status.DONE, LocalDateTime.now().plusMinutes(5), Duration.ofMinutes(150)));
+
+
         //newManager.removeOneEpicById(epic1.getId());
         System.out.println(newManager.getAllEpics());
         System.out.println(newManager.getAllSubTaskOfEpic(epic1.getId()));
-        newManager.removeSubTasks();
-        System.out.println(newManager.getAllEpics());
+      //  newManager.removeSubTasks();
+      //  System.out.println(newManager.getAllEpics());
 
+/*        // Дополнительное задание ТЗ-8
+        InstantComplexityPrioritizedManager instantManager = new InstantComplexityPrioritizedManager();
+        // Проверим заполнении временной сетки при создании экземпляра менеджера
+        System.out.println("\nИсходная временная сетка");
+        System.out.println(instantManager.getTimeAvailabilityGrid());
+        // Добавим две задачи, которые не пересекаются по времени
+        instantManager.addTask(new Task("timeName1", "timeDescription1",
+                LocalDateTime.now().plusMinutes(13), Duration.ofMinutes(15)));
+        instantManager.addTask(new Task("timeName2", "timeDescription1",
+                LocalDateTime.now().plusMinutes(45), Duration.ofMinutes(95)));
+        System.out.println("\nЗадачи, не пересекающиеся во времени");
+        System.out.println(instantManager.getPrioritizedTasks());
+        System.out.println("\nВременная сетка после добавления задач");
+        System.out.println(instantManager.getTimeAvailabilityGrid());
+        // Попытаемся добавить задачу, которая пересекается по времени с имеющимися
+        instantManager.addTask(new Task("timeNameOverlapping", "timeDescriptionOverlapping",
+                LocalDateTime.now().plusMinutes(26), Duration.ofMinutes(50)));
+        System.out.println("\nЗадачи после добавления новой, пересекающейся с ними задачи");
+        System.out.println(instantManager.getPrioritizedTasks());
+        // Увидим, что задачи заняли соответствующие интервалы во временной сетки
+        System.out.println("\nВременная сетка не изменилась:");
+        System.out.println(instantManager.getTimeAvailabilityGrid());*/
     }
 
 }
