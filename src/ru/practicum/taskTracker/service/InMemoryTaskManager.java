@@ -9,11 +9,20 @@ import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
     private int taskCounter;
+    private final LocalDateTime initialTimeStamp = LocalDateTime.now();
     protected final HistoryManager historyManager = Managers.getDefaultHistory();
     protected final Map<Integer, Task> allTasks = new HashMap<>();
     protected final Map<Integer, Epic> allEpics = new HashMap<>();
     protected final Map<Integer, SubTask> allSubTasks = new HashMap<>();
     protected final Set<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
+    private final Map<Long, Boolean> timeAvailabilityTable = new HashMap<>();
+
+    public InMemoryTaskManager() {
+        for(long i = 0; i < 525_600; i = i + 15) {
+            timeAvailabilityTable.put(Duration.between(initialTimeStamp .plusMinutes(i),
+                    initialTimeStamp).toMinutes(), false);
+        }
+    }
 
     // Методы для каждого из типа задач(Задача/Эпик/Подзадача):
     // d. Создание. Сам объект должен передаваться в качестве параметра.
@@ -322,6 +331,10 @@ public class InMemoryTaskManager implements TaskManager {
             epic.setStartTime(epicStartTime);
             epic.setEndTime(epicEndTime);
             epic.setDuration(epicDuration);
+        } else {
+            epic.setStartTime(null);
+            epic.setEndTime(null);
+            epic.setDuration(null);
         }
     }
 
@@ -353,4 +366,25 @@ public class InMemoryTaskManager implements TaskManager {
         return isOverlappingByEnd || isOverlappingByStart || areTasksWithin || areTasksTimesEqual;
     }
 
+    // ДОП ЗАДАНИЕ К ТЗ-8
+    public void addPrioritizedTaskInstantly(Task task) {
+        boolean isValid = true;
+        long startTimeInterval = Duration.between(initialTimeStamp, task.getStartTime()).toMinutes();
+        long endTimeInterval = Duration.between(initialTimeStamp, task.getEndTime()).toMinutes();
+        long taskDuration = Duration.between(task.getStartTime(), task.getEndTime()).toMinutes();
+
+        int startKey = 0;
+        int endKey = 0;
+        int AmountOfIntervalsToCheck = endKey - startKey +1;
+
+        for(long i = startTimeInterval; i < AmountOfIntervalsToCheck; i = i + 15) {
+            if(timeAvailabilityTable.get(i)) {
+                isValid = false;
+                break;
+            }
+        }
+        if(isValid) {
+            prioritizedTasks.add(task);
+        }
+    }
 }

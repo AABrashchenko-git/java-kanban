@@ -86,6 +86,9 @@ public class Main {
         //newManager.removeOneEpicById(epic1.getId());
         System.out.println(newManager.getAllEpics());
         System.out.println(newManager.getAllSubTaskOfEpic(epic1.getId()));
+        newManager.removeSubTasks();
+        System.out.println(newManager.getAllEpics());
+
     }
 
 }
