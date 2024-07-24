@@ -3,10 +3,11 @@ package service;
 import org.junit.jupiter.api.*;
 import ru.practicum.taskTracker.model.*;
 import ru.practicum.taskTracker.service.InMemoryTaskManager;
+import ru.practicum.taskTracker.service.TaskManager;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class InMemoryTaskManagerTest {
+class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
     InMemoryTaskManager manager;
     private Task testTask;
     private Task testTask2;
@@ -14,9 +15,14 @@ class InMemoryTaskManagerTest {
     private Epic testEpic2;
     private SubTask testSubTask;
 
+    @Override
+    InMemoryTaskManager init() {
+        return new InMemoryTaskManager();
+    }
+
     @BeforeEach
     void getNewTaskManager() {
-        manager = new InMemoryTaskManager();
+        manager = init();
         testTask = new Task("taskName", "testDescription");
         testTask2 = new Task("taskName2", "testDescription2");
         manager.addTask(testTask);
@@ -29,15 +35,18 @@ class InMemoryTaskManagerTest {
         manager.addSubTask(testSubTask);
     }
 
+
+
     @Test
     void addTask() {
         // проверьте, что InMemoryTaskManager действительно добавляет задачи разного типа и может найти их по id
         // задачи
-        assertNotNull(manager.getTaskById(testTask.getId()), "Task not found");
+       /* assertNotNull(manager.getTaskById(testTask.getId()), "Task not found");
         assertNotNull(manager.getTaskById(testTask2.getId()), "Task not found");
         assertEquals(testTask, manager.getTaskById(testTask.getId()), "Task are not equal");
         assertEquals(testTask2, manager.getTaskById(testTask2.getId()), "Task are not equal");
-        assertNotNull(manager.getAllTasks(), "Задачи не возвращаются.");
+        assertNotNull(manager.getAllTasks(), "Задачи не возвращаются.");*/
+        super.addTask();
     }
 
     @Test

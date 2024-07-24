@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class FileBackedTaskManager extends InMemoryTaskManager implements TaskManager {
     private final File file;
@@ -134,7 +135,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 taskToString.append(((SubTask) task).getEpicId());
                 break;
             case EPIC:
-                if(((Epic) task).getSubTasksIdList().isEmpty())
+                if (((Epic) task).getSubTasksIdList().isEmpty())
                     taskToString.append("st").append(0);
                 for (Integer subTaskId : ((Epic) task).getSubTasksIdList()) {
                     taskToString.append("st").append(subTaskId);
@@ -204,7 +205,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 epic.setStatus(status);
                 elements[5] = elements[5].substring(2);
                 String[] subTasks = elements[5].split("st");
-                if(!subTasks[0].equals("0")) {
+                if (!subTasks[0].equals("0")) {
                     for (String string : subTasks) {
                         epic.getSubTasksIdList().add(Integer.parseInt(string));
                     }
@@ -240,13 +241,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 if (!isHistory) {
                     if (newTask instanceof SubTask) {
                         manager.allSubTasks.put(newTask.getId(), (SubTask) newTask);
-                        if(newTask.getStartTime() != null) manager.addPrioritizedTask(newTask);
+                        if (newTask.getStartTime() != null) manager.addPrioritizedTask(newTask);
                     } else if (newTask instanceof Epic) {
                         Epic epic = (Epic) newTask;
                         manager.allEpics.put(epic.getId(), epic);
                     } else {
                         manager.allTasks.put(newTask.getId(), newTask);
-                        if(newTask.getStartTime() != null) manager.addPrioritizedTask(newTask);
+                        if (newTask.getStartTime() != null) manager.addPrioritizedTask(newTask);
                     }
                 } else {
                     historyList.add(newTask);

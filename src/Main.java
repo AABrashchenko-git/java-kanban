@@ -79,19 +79,30 @@ public class Main {
         System.out.println("___________________________________");
         System.out.println(newManager.getHistory());
 
-        // Посмотрим, сохранились ли временные метки в исходной задаче и в восстановленной
+        // Посмотрим, сохранились ли временные метки в исходной задаче и в восстановленной,
+        // а также проверим работу методов, возвращающих Optional
         System.out.println("\nВремя начала и окончания epic1 в исходном и восстановленном менеджере:");
-
-        System.out.print(manager.getEpicById(epic1.getId()).getStartTime()
-                .format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm")) + " - ");
-        System.out.println(newManager.getEpicById(epic1.getId()).getStartTime());
-
-        System.out.print(manager.getEpicById(epic1.getId()).getEndTime()
-                .format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm")) + " - ");
-        System.out.println(newManager.getEpicById(epic1.getId()).getEndTime());
+        manager.getEpicByIdOptional(epic1.getId()).ifPresent(ep -> {
+            System.out.print(ep.getStartTime()
+                    .format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm")) + " - ");
+            System.out.println(ep.getEndTime()
+                    .format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm")));
+        });
+        newManager.getEpicByIdOptional(epic1.getId()).ifPresent(ep -> {
+            System.out.print(ep.getStartTime()
+                    .format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm")) + " - ");
+            System.out.println(ep.getEndTime()
+                    .format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm")));
+        });
+        manager.getTaskByIdOptional(task3.getId());
+        manager.getSubTaskByIdOptional(subTask4.getId());
+        System.out.println("\nИстория после использования методов getByIdOptional");
+        System.out.println("___________________________________");
+        System.out.println(manager.getHistory());
 
         // В ТЗ не было конкретики, что делать, если при добавлении задачи она пересекается с другими. Решил в методе
         // addPrioritizedTask(Task taskToAdd) всё же добавлять её, помещая в самый конец списка задач по приоритету.
+        // То есть, если задача пересекается с другими - добавляем её после всех остальных с учетом длительности
         // Если добавлять не нужно, убираем в методе блок else, тогда добавлены будут только задачи без пересечения
         System.out.println("\nЗадачи по приоритету исходного менеджера");
         System.out.println(manager.getPrioritizedTasks());
