@@ -142,7 +142,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 break;
         }
         if (task.getStartTime() != null && task.getDuration() != null) {
-            String startTime = task.getStartTime().format(DateTimeFormatter.ofPattern("yyyy.MM.dd|HH:mm"));
+            String startTime = task.getStartTime().format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"));
             long duration = task.getDuration().toMinutes();
 
             taskToString.append(",").append(startTime).append(",").append(duration);
@@ -191,7 +191,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         if (elements.length > 6) {
             duration = Duration.ofMinutes(Long.parseLong(elements[elements.length - 1]));
             startTime = LocalDateTime.parse(elements[elements.length - 2],
-                    DateTimeFormatter.ofPattern("yyyy.MM.dd|HH:mm"));
+                    DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"));
         }
         switch (elements[1]) {
             case "SUBTASK":

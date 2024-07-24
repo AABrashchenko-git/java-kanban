@@ -42,11 +42,12 @@ public class InMemoryTaskManager implements TaskManager {
         if (epic == null) {
             return null;
         }
+        //TODO проверить последовательность
+        if (subTask.getStartTime() != null)
+            addPrioritizedTask(subTask);
         epic.addSubTaskIdToList(subTask.getId());
         epic.setStatus(getUpdatedEpicStatus(epic));
         updateEpicTime(epic);
-        if (subTask.getStartTime() != null)
-            addPrioritizedTask(subTask);
         return subTask;
     }
 
@@ -105,6 +106,8 @@ public class InMemoryTaskManager implements TaskManager {
         if (task != null) {
             addToHistory(task);
         }
+        /*Optional<Task> optionalTask = Optional.ofNullable(allTasks.get(taskId));
+        optionalTask.ifPresent(task -> addToHistory(task));*/
         return task;
     }
 

@@ -2,6 +2,7 @@ package ru.practicum.taskTracker.model;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Task {
@@ -122,6 +123,7 @@ public class Task {
 
     @Override
     public String toString() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
         StringBuilder taskInfo = new StringBuilder();
         taskInfo.append("\b\b\n [ID задачи: ");
         taskInfo.append(this.getId());
@@ -132,8 +134,8 @@ public class Task {
         taskInfo.append(", текущий статус задачи: ");
         taskInfo.append(this.getStatus());
         if (this.startTime != null && this.duration != null) {
-            taskInfo.append(", время начала задачи: ").append(this.getStartTime())
-                    .append(", время окончания задачи: ").append(this.getEndTime());
+            taskInfo.append(", время начала задачи: ").append(this.getStartTime().format(formatter))
+                    .append(", время окончания задачи: ").append(this.getEndTime().format(formatter));
         }
         taskInfo.append("]");
         return taskInfo.toString();

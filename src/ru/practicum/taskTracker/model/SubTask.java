@@ -2,6 +2,7 @@ package ru.practicum.taskTracker.model;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class SubTask extends Task {
     private int epicId;
@@ -45,6 +46,7 @@ public class SubTask extends Task {
 
     @Override
     public String toString() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
         StringBuilder subTaskInfo = new StringBuilder();
         subTaskInfo.append("\b\b\n [ID подзадачи: ");
         subTaskInfo.append(this.getId());
@@ -57,8 +59,8 @@ public class SubTask extends Task {
         subTaskInfo.append(", статус подзадачи: ");
         subTaskInfo.append(this.getStatus());
         if (this.getStartTime() != null && this.getDuration() != null) {
-            subTaskInfo.append(", время начала подзадачи: ").append(this.getStartTime())
-                    .append(", время окончания подзадачи: ").append(this.getEndTime());
+            subTaskInfo.append(", время начала подзадачи: ").append(this.getStartTime().format(formatter))
+                    .append(", время окончания подзадачи: ").append(this.getEndTime().format(formatter));
         }
         subTaskInfo.append("]");
 
