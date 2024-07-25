@@ -2,43 +2,57 @@ package service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.practicum.taskTracker.exceptions.FileBackedTaskManagerInputException;
 import ru.practicum.taskTracker.model.*;
 import ru.practicum.taskTracker.service.FileBackedTaskManager;
+import ru.practicum.taskTracker.service.InMemoryTaskManager;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class FileBackedTaskManagerTest {
-    FileBackedTaskManager manager;
-    private Task testTask;
-    private Task testTask2;
-    private Epic testEpic;
-    private Epic testEpic2;
-    private SubTask testSubTask;
+public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     File file;
 
+    @Override
+    FileBackedTaskManager init() {
+        return new FileBackedTaskManager(file);
+    }
+
     @BeforeEach
-    void getNewTaskManager() {
+    void beforeEach() {
         try {
             file = File.createTempFile("tasks", ".csv");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        manager = new FileBackedTaskManager(file);
-        testTask = new Task("taskName", "testDescription");
-        testTask2 = new Task("taskName2", "testDescription2");
-        testEpic = new Epic("taskName", "testDescription");
-        testEpic2 = new Epic("taskName2", "testDescription2");
-        testSubTask = new SubTask(testEpic.getId(), "taskName", "testDescription");
-
+        manager = init();
+        task1 = new Task("taskName", "testDescription");
+        task2 = new Task("taskName2", "testDescription2");
+        epic1 = new Epic("epicName", "testDescription");
+        epic2 = new Epic("epicName", "testDescription2");
+        manager.addTask(task1);
+        manager.addTask(task2);
+        manager.addEpic(epic1);
+        manager.addEpic(epic2);
+        subTask1 = new SubTask(epic1.getId(), "имяПодзадачи1Эпика",
+                "описаниеПодзадачи1Эпика1");
+        subTask2 = new SubTask(epic1.getId(), "имяПодзадачи2Эпика",
+                "описаниеПодзадачи2Эпика1");
+        subTask3 = new SubTask(epic1.getId(), "имяПодзадачи3Эпика",
+                "описаниеПодзадачи1Эпика2");
+        manager.addSubTask(subTask1);
+        manager.addSubTask(subTask2);
+        manager.addSubTask(subTask3);
     }
 
     // Проверить сохранение и загрузку пустого файла
     @Test
     void ensureManagerSavesAndLoadsEmptyListOfTasks() {
+        manager = init();
         manager.save();
         manager = FileBackedTaskManager.loadFromFile(file);
         assertEquals(Collections.emptyList(), manager.getAllTasks());
@@ -51,24 +65,30 @@ public class FileBackedTaskManagerTest {
     // Проверить загрузку нескольких задач
     @Test
     void ensureManagerSavesAndLoadsFilledListOfTasks() {
-        manager.addTask(testTask);
-        manager.addTask(testTask2);
-        manager.addEpic(testEpic);
-        manager.addEpic(testEpic2);
-        manager.addSubTask(testSubTask);
+        manager.getTaskById(task1.getId());
+        manager.getTaskById(task2.getId());
+        manager.getEpicById(epic1.getId());
+        manager.getEpicById(epic2.getId());
+        manager.getSubTaskById(subTask1.getId());
 
-        manager.getTaskById(testTask.getId());
-        manager.getTaskById(testTask2.getId());
-        manager.getEpicById(testEpic.getId());
-        manager.getEpicById(testEpic2.getId());
-        manager.getSubTaskById(testSubTask.getId());
-
-        manager.save();
         FileBackedTaskManager newManager = FileBackedTaskManager.loadFromFile(file);
         assertEquals(newManager.getAllTasks(), manager.getAllTasks());
         assertEquals(newManager.getAllEpics(), manager.getAllEpics());
         assertEquals(newManager.getAllSubTasks(), manager.getAllSubTasks());
         assertEquals(newManager.getHistory(), manager.getHistory());
+    }
+
+    @Test
+    public void testException() {
+
+        assertThrows(FileBackedTaskManagerInputException.class, () -> {
+            File file1 = new File("nonExistingFile.txt");
+            manager = FileBackedTaskManager.loadFromFile(file1);
+        }, "Файл не найден!");
+
+        assertDoesNotThrow(() -> {
+            manager = FileBackedTaskManager.loadFromFile(file);
+        });
     }
 
 }
