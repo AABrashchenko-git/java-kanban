@@ -52,33 +52,4 @@ class EpicTest {
         );
     }
 
-    @Test
-    void showEpicChangesStatusAlongWithItsSubTasks() {
-        // Все подзадачи со статусом NEW
-        assertEquals(Status.NEW, testEpic.getStatus(), "Epic Status is invalid");
-        // Все подзадачи со статусом DONE
-        manager.updateSubTask(new SubTask(testEpic.getId(), subTask1.getId(), subTask1.getName(),
-                subTask1.getDescription(), Status.DONE));
-        manager.updateSubTask(new SubTask(testEpic.getId(), subTask2.getId(), subTask2.getName(),
-                subTask2.getDescription(), Status.DONE));
-        manager.updateSubTask(new SubTask(testEpic.getId(), subTask3.getId(), subTask3.getName(),
-                subTask3.getDescription(), Status.DONE));
-        assertEquals(Status.DONE, testEpic.getStatus(), "Epic Status is invalid");
-        // Подзадачи со статусами NEW и DONE
-        manager.updateSubTask(new SubTask(testEpic.getId(), subTask1.getId(), subTask1.getName(),
-                subTask1.getDescription(), Status.DONE));
-        manager.updateSubTask(new SubTask(testEpic.getId(), subTask2.getId(), subTask2.getName(),
-                subTask2.getDescription(), Status.NEW));
-        manager.updateSubTask(new SubTask(testEpic.getId(), subTask3.getId(), subTask3.getName(),
-                subTask3.getDescription(), Status.DONE));
-        assertEquals(Status.IN_PROGRESS, testEpic.getStatus(), "Epic Status is invalid");
-        // Подзадачи со статусом IN_PROGRESS
-        manager.updateSubTask(new SubTask(testEpic.getId(), subTask1.getId(), subTask1.getName(),
-                subTask1.getDescription(), Status.IN_PROGRESS));
-        manager.updateSubTask(new SubTask(testEpic.getId(), subTask2.getId(), subTask2.getName(),
-                subTask2.getDescription(), Status.IN_PROGRESS));
-        manager.updateSubTask(new SubTask(testEpic.getId(), subTask3.getId(), subTask3.getName(),
-                subTask3.getDescription(), Status.IN_PROGRESS));
-        assertEquals(Status.IN_PROGRESS, testEpic.getStatus(), "Epic Status is invalid");
-    }
 }

@@ -58,4 +58,6 @@ public interface TaskManager {
     Optional<Epic> getEpicByIdOptional(int epicId);
 
     Optional<SubTask> getSubTaskByIdOptional(int subTaskId);
+
+    boolean isOverlapping(Task task1, Task task2);
 }

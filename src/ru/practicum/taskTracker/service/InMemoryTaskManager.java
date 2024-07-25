@@ -318,14 +318,16 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     public boolean isOverlapping(Task task1, Task task2) {
-        // task1 начинается раньше task2, но task2 кончается после task1
-        boolean isOverlappingByEnd = task1.getStartTime().isBefore(task2.getStartTime())
+        // task1 начинается раньше task2, но task2 кончается после task1 || либо одновременно с task1
+        boolean isOverlappingByEnd = (task1.getStartTime().isBefore(task2.getStartTime())
                 && task1.getEndTime().isAfter(task2.getStartTime())
-                && task1.getEndTime().isBefore(task2.getEndTime());
-        // task1 начинается позже task2, но task2 кончается раньше task1
-        boolean isOverlappingByStart = task1.getStartTime().isAfter(task2.getStartTime())
+                && task1.getEndTime().isBefore(task2.getEndTime()))
+                || (task1.getStartTime().equals(task2.getStartTime()) && task1.getEndTime().isBefore(task2.getEndTime()));
+        // task1 начинается позже task2 || либо начинается одновременно с task1, но task2 кончается раньше task1
+        boolean isOverlappingByStart = (task1.getStartTime().isAfter(task2.getStartTime())
                 && task1.getEndTime().isAfter(task2.getEndTime())
-                && task1.getStartTime().isBefore(task2.getEndTime());
+                && task1.getStartTime().isBefore(task2.getEndTime()))
+                || (task1.getStartTime().isAfter(task2.getStartTime()) && task1.getEndTime().equals(task2.getEndTime()));
         // task1 и task2 находятся одна внутри другой
         boolean areTasksWithin = (task1.getStartTime().isAfter(task2.getStartTime())
                 && task1.getEndTime().isBefore(task2.getEndTime()))

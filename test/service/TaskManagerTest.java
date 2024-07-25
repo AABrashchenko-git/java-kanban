@@ -168,10 +168,44 @@ abstract class TaskManagerTest<T extends TaskManager> {
     void getPrioritizedTasks() {
         task1.setStartTime(LocalDateTime.now());
         task1.setDuration(Duration.ofMinutes(20));
-        task2.setStartTime(LocalDateTime.now().plusMinutes(15));
         subTask1.setStartTime(LocalDateTime.now().plusMinutes(30));
         subTask1.setDuration(Duration.ofMinutes(20));
+        subTask2.setStartTime(LocalDateTime.now().plusMinutes(10));
+        subTask2.setDuration(Duration.ofMinutes(40));
 
+        manager.addTask(task1);
+        manager.addTask(task2);
+        manager.addEpic(epic1);
+        manager.addEpic(epic2);
+        manager.addSubTask(subTask1);
+        manager.addSubTask(subTask2);
+        manager.addSubTask(subTask3);
+
+        boolean isSortedByStartTime = (manager.getPrioritizedTasks().stream()
+                .reduce(null, (prev, curr) -> {
+                    if (prev == null || prev.getStartTime().isAfter(curr.getStartTime())) {
+                        return curr;
+                    } else {
+                        return null;
+                    }
+                }) != null);
+
+        assertTrue(isSortedByStartTime);
+
+    }
+
+    @Test
+    void isOverlapping() {
+        task1.setStartTime(LocalDateTime.now());
+        task1.setDuration(Duration.ofMinutes(20));
+        subTask1.setStartTime(LocalDateTime.now().plusMinutes(30));
+        subTask1.setDuration(Duration.ofMinutes(20));
+        subTask2.setStartTime(LocalDateTime.now().plusMinutes(10));
+        subTask2.setDuration(Duration.ofMinutes(40));
+
+        assertFalse(manager.isOverlapping(task1, subTask1));
+        assertTrue(manager.isOverlapping(task1, subTask2));
+        assertTrue(manager.isOverlapping(subTask1, subTask2));
     }
 
     @Test
@@ -187,6 +221,42 @@ abstract class TaskManagerTest<T extends TaskManager> {
         assertEquals(optional, manager.getSubTaskByIdOptional(999));
     }
 
+    @Test
+    void showEpicChangesStatusAlongWithItsSubTasks() {
+        // Все подзадачи со статусом NEW
+        assertEquals(Status.NEW, epic1.getStatus(), "Epic Status is invalid");
+        // Все подзадачи со статусом DONE
+        manager.updateSubTask(new SubTask(epic1.getId(), subTask1.getId(), subTask1.getName(),
+                subTask1.getDescription(), Status.DONE));
+        manager.updateSubTask(new SubTask(epic1.getId(), subTask2.getId(), subTask2.getName(),
+                subTask2.getDescription(), Status.DONE));
+        manager.updateSubTask(new SubTask(epic1.getId(), subTask3.getId(), subTask3.getName(),
+                subTask3.getDescription(), Status.DONE));
+        assertEquals(Status.DONE, epic1.getStatus(), "Epic Status is invalid");
+        // Подзадачи со статусами NEW и DONE
+        manager.updateSubTask(new SubTask(epic1.getId(), subTask1.getId(), subTask1.getName(),
+                subTask1.getDescription(), Status.DONE));
+        manager.updateSubTask(new SubTask(epic1.getId(), subTask2.getId(), subTask2.getName(),
+                subTask2.getDescription(), Status.NEW));
+        manager.updateSubTask(new SubTask(epic1.getId(), subTask3.getId(), subTask3.getName(),
+                subTask3.getDescription(), Status.DONE));
+        assertEquals(Status.IN_PROGRESS, epic1.getStatus(), "Epic Status is invalid");
+        // Подзадачи со статусом IN_PROGRESS
+        manager.updateSubTask(new SubTask(epic1.getId(), subTask1.getId(), subTask1.getName(),
+                subTask1.getDescription(), Status.IN_PROGRESS));
+        manager.updateSubTask(new SubTask(epic1.getId(), subTask2.getId(), subTask2.getName(),
+                subTask2.getDescription(), Status.IN_PROGRESS));
+        manager.updateSubTask(new SubTask(epic1.getId(), subTask3.getId(), subTask3.getName(),
+                subTask3.getDescription(), Status.IN_PROGRESS));
+        assertEquals(Status.IN_PROGRESS, epic1.getStatus(), "Epic Status is invalid");
+    }
 
+    @Test
+    void showSubTaskCannotExistWithoutEpic() {
+        assertNotNull(manager.getEpicById(epic1.getId()));
+        assertNotNull(manager.getSubTaskById(subTask1.getId()));
+        manager.removeOneEpicById(epic1.getId());
+        assertNull(manager.getSubTaskById(subTask1.getId()));
+    }
 
 }
