@@ -3,7 +3,9 @@ package service;
 import org.junit.jupiter.api.*;
 import ru.practicum.taskTracker.model.*;
 import ru.practicum.taskTracker.service.InMemoryTaskManager;
-import ru.practicum.taskTracker.service.TaskManager;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,7 +19,7 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
     @BeforeEach
     void beforeEach() {
         manager = init();
-        task1 = new Task("taskName", "testDescription");
+        task1 = new Task("taskName", "testDescription", LocalDateTime.now(), Duration.ofMinutes(20));
         task2 = new Task("taskName2", "testDescription2");
         epic1 = new Epic("epicName", "testDescription");
         epic2 = new Epic("epicName", "testDescription2");
@@ -26,16 +28,16 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
         manager.addEpic(epic1);
         manager.addEpic(epic2);
         subTask1 = new SubTask(epic1.getId(), "имяПодзадачи1Эпика",
-                "описаниеПодзадачи1Эпика1");
+                "описаниеПодзадачи1Эпика1", LocalDateTime.now().plusMinutes(30), Duration.ofMinutes(20));
         subTask2 = new SubTask(epic1.getId(), "имяПодзадачи2Эпика",
-                "описаниеПодзадачи2Эпика1");
+                "описаниеПодзадачи2Эпика1", LocalDateTime.now().plusMinutes(10), Duration.ofMinutes(40));
         subTask3 = new SubTask(epic1.getId(), "имяПодзадачи3Эпика",
                 "описаниеПодзадачи1Эпика2");
         manager.addSubTask(subTask1);
         manager.addSubTask(subTask2);
         manager.addSubTask(subTask3);
     }
-    
+
     // Старые тесты
     @Test
     void ensureNoCollisionsInTasksWithGivenAndGeneratedId() {
@@ -86,6 +88,8 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
         assertNull(removedSubTask,
                 "Удаленную подзадачу можно получить по id!");
         // Проверяем, что эпик больше не содержит неактуальную удаленную подзадачу
+        manager.removeOneSubTaskById(subTask2.getId());
+        manager.removeOneSubTaskById(subTask3.getId());
         assertEquals(0, epic1.getSubTasksIdList().size(),
                 "Удаленная подзадача содержится в эпике!");
         // Проверяем, что подзадача с данным id больше не хранится в истории

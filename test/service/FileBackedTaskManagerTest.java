@@ -5,11 +5,11 @@ import org.junit.jupiter.api.Test;
 import ru.practicum.taskTracker.exceptions.FileBackedTaskManagerInputException;
 import ru.practicum.taskTracker.model.*;
 import ru.practicum.taskTracker.service.FileBackedTaskManager;
-import ru.practicum.taskTracker.service.InMemoryTaskManager;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,7 +30,8 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
             throw new RuntimeException(e);
         }
         manager = init();
-        task1 = new Task("taskName", "testDescription");
+
+        task1 = new Task("taskName", "testDescription", LocalDateTime.now(), Duration.ofMinutes(20));
         task2 = new Task("taskName2", "testDescription2");
         epic1 = new Epic("epicName", "testDescription");
         epic2 = new Epic("epicName", "testDescription2");
@@ -39,9 +40,9 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         manager.addEpic(epic1);
         manager.addEpic(epic2);
         subTask1 = new SubTask(epic1.getId(), "имяПодзадачи1Эпика",
-                "описаниеПодзадачи1Эпика1");
+                "описаниеПодзадачи1Эпика1", LocalDateTime.now().plusMinutes(30), Duration.ofMinutes(20));
         subTask2 = new SubTask(epic1.getId(), "имяПодзадачи2Эпика",
-                "описаниеПодзадачи2Эпика1");
+                "описаниеПодзадачи2Эпика1", LocalDateTime.now().plusMinutes(10), Duration.ofMinutes(40));
         subTask3 = new SubTask(epic1.getId(), "имяПодзадачи3Эпика",
                 "описаниеПодзадачи1Эпика2");
         manager.addSubTask(subTask1);

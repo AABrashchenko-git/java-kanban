@@ -4,6 +4,8 @@ import org.junit.jupiter.api.*;
 import ru.practicum.taskTracker.model.*;
 import ru.practicum.taskTracker.service.*;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -175,6 +177,45 @@ class InMemoryHistoryManagerTest {
             assertEquals(listWithSurelyCorrectOrder.get(i), manager.getHistory().get(i),
                     "История не сохраняет порядок просмотра!");
         }
+    }
+
+    // Тест к ТЗ-8. Других тестов не добавлял, т.к. все требуемое уже протестировано
+    // Удаление из истории: начало, середина, конец
+    @Test
+    void ensureHistoryRemovesTasksAppropriately() {
+        //  дополнительно создаем и добавляем пару задач
+        Task testTask2 = new Task("имяЗадачи2", "описаниеЗадачи2",
+                LocalDateTime.now(), Duration.ofMinutes(30));
+        Epic testEpic2 = new Epic("имяЭпика2", "описаниеЭпика2");
+        manager.addEpic(testEpic2);
+        manager.addTask(testTask2);
+
+        Task task1 = manager.getTaskById((testTask.getId()));
+        Task task2 = manager.getTaskById((testTask2.getId()));
+        SubTask subTask1 = manager.getSubTaskById(testSubTask.getId());
+        Epic epic1 = manager.getEpicById(testEpic.getId());
+        Epic epic2 = manager.getEpicById(testEpic2.getId());
+
+        List<Task> tasks = new LinkedList<>();
+        tasks.add(task1);
+        tasks.add(task2);
+        tasks.add(subTask1);
+        tasks.add(epic1);
+        tasks.add(epic2);
+
+        assertEquals(tasks, manager.getHistory());
+        // Удаление из начала
+        manager.removeOneTaskById(testTask.getId());
+        tasks.remove(task1);
+        assertEquals(tasks, manager.getHistory());
+        // Удаление из середины
+        manager.removeOneSubTaskById(testSubTask.getId());
+        tasks.remove(subTask1);
+        assertEquals(tasks, manager.getHistory());
+        // Удаление из конца
+        manager.removeOneEpicById(testEpic2.getId());
+        tasks.remove(epic2);
+        assertEquals(tasks, manager.getHistory());
     }
 
 }

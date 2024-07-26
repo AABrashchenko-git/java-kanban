@@ -1,12 +1,10 @@
 package service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.practicum.taskTracker.model.Epic;
 import ru.practicum.taskTracker.model.Status;
 import ru.practicum.taskTracker.model.SubTask;
 import ru.practicum.taskTracker.model.Task;
-import ru.practicum.taskTracker.service.InMemoryTaskManager;
 import ru.practicum.taskTracker.service.TaskManager;
 
 import java.time.Duration;
@@ -17,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 abstract class TaskManagerTest<T extends TaskManager> {
-    T manager = init();
+    T manager;
     Task task1;
     Task task2;
     Epic epic1;
@@ -25,23 +23,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
     SubTask subTask1;
     SubTask subTask2;
     SubTask subTask3;
-
-/*   @BeforeEach
-    void beforeEach() {
-        manager = init();
-        epic1 = new Epic(1, "epicName", "testDescription");
-        epic2 = new Epic(1, "epicName", "testDescription2");
-        subTask1 = new SubTask(epic1.getId(), 2, "имяПодзадачи1Эпика",
-                "описаниеПодзадачи1Эпика1", Status.NEW);
-        subTask2 = new SubTask(epic1.getId(), 3, "имяПодзадачи2Эпика",
-                "описаниеПодзадачи2Эпика1", Status.NEW);
-        subTask3 = new SubTask(epic1.getId(), 4, "имяПодзадачи3Эпика",
-                "описаниеПодзадачи1Эпика2", Status.NEW);
-        manager.addEpic(epic1);
-        manager.addSubTask(subTask1);
-        manager.addSubTask(subTask2);
-        manager.addSubTask(subTask3);
-    }*/
 
     abstract T init();
 
@@ -166,36 +147,31 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void getPrioritizedTasks() {
-        task1.setStartTime(LocalDateTime.now());
-        task1.setDuration(Duration.ofMinutes(20));
-        subTask1.setStartTime(LocalDateTime.now().plusMinutes(30));
-        subTask1.setDuration(Duration.ofMinutes(20));
-        subTask2.setStartTime(LocalDateTime.now().plusMinutes(10));
-        subTask2.setDuration(Duration.ofMinutes(40));
-
-        manager.addTask(task1);
-        manager.addTask(task2);
-        manager.addEpic(epic1);
-        manager.addEpic(epic2);
-        manager.addSubTask(subTask1);
-        manager.addSubTask(subTask2);
-        manager.addSubTask(subTask3);
-
+        // аккумулятор в reduce() будет возвращать null, если список не отсортирован
         boolean isSortedByStartTime = (manager.getPrioritizedTasks().stream()
                 .reduce(null, (prev, curr) -> {
-                    if (prev == null || prev.getStartTime().isAfter(curr.getStartTime())) {
+                    if (prev == null || curr.getStartTime().isAfter(prev.getStartTime())) {
                         return curr;
                     } else {
                         return null;
                     }
                 }) != null);
-
         assertTrue(isSortedByStartTime);
-
     }
 
     @Test
     void isOverlapping() {
+        // Время начала epic1.getStartTime = самой ранней подзадачи, epic1.getEndTime = время окончания самой поздней
+        assertEquals(epic1.getStartTime(), subTask1.getStartTime());
+        assertEquals(epic1.getEndTime(), subTask2.getEndTime());
+
+        // Метод addPrioritizedTask добавляет задачу, если она пересекается, помещая её в конец списка приоритетных задач
+        // Поэтому они не будут пересекаться в любом случае
+        assertFalse(manager.isOverlapping(task1, subTask1));
+        assertFalse(manager.isOverlapping(task1, subTask2));
+        assertFalse(manager.isOverlapping(subTask1, subTask2));
+
+        // Чтобы проверить работу метода isOverlapping(), вернем изначально заданное время (перед добавлением)
         task1.setStartTime(LocalDateTime.now());
         task1.setDuration(Duration.ofMinutes(20));
         subTask1.setStartTime(LocalDateTime.now().plusMinutes(30));

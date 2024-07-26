@@ -27,7 +27,7 @@ public class Task {
         this.status = status;
     }
 
-    // Конструктор для создания
+    // Конструктор для создания задачи с временными метками
     public Task(String name, String description, LocalDateTime startTime, Duration duration) {
         this.name = name;
         this.description = description;
@@ -36,7 +36,7 @@ public class Task {
         this.status = Status.NEW;
     }
 
-    // Конструктор для обновления
+    // Конструктор для обновления задачи с временными метками
     public Task(int id, String name, String description, Status status, LocalDateTime startTime, Duration duration) {
         this.id = id;
         this.name = name;

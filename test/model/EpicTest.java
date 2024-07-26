@@ -5,9 +5,6 @@ import org.junit.jupiter.api.Test;
 import ru.practicum.taskTracker.model.*;
 import ru.practicum.taskTracker.service.InMemoryTaskManager;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class EpicTest {

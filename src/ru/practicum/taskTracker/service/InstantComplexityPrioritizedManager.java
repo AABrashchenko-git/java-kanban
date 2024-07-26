@@ -7,6 +7,17 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 
+/**
+ * Для удобства создал отдельный класс для реализации логики менеджера из доп. задания к ТЗ-8:
+ * ----------------------------------------
+ * Подумайте, какая структура данных и какой алгоритм проверки подойдут, чтобы уменьшить
+ * сложность поиска пересечений до * O(1).
+ * ----------------------------------------
+ * timeAvailabilityGrid хранит пару interval - (true ячейка занята \ false - ячейка свободна)
+ * addPrioritizedTask(Task task) проверяет, свободны ли ячейки, которые будут заняты этой задачей
+ * если да - добавляет задачу в instantPrioritizedTasks и занимает соответствующие ячейки в timeAvailabilityGrid
+ */
+
 public class InstantComplexityPrioritizedManager extends InMemoryTaskManager {
     private final LocalDateTime initialTimeStamp = LocalDateTime.now();
     private final Map<Long, Boolean> timeAvailabilityGrid = new LinkedHashMap<>();
@@ -45,7 +56,7 @@ public class InstantComplexityPrioritizedManager extends InMemoryTaskManager {
 
     @Override
     public void addPrioritizedTask(Task task) {
-        if(task.getStartTime() == null && task.getDuration() == null)
+        if (task.getStartTime() == null && task.getDuration() == null)
             return;
 
         boolean isValid = true;

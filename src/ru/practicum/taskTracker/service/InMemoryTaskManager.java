@@ -20,8 +20,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task addTask(Task task) {
         task.setId(getNextId());
-        if (task.getStartTime() != null)
-            addPrioritizedTask(task);
+        addPrioritizedTask(task);
         return allTasks.put(task.getId(), task);
     }
 
@@ -42,9 +41,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (epic == null) {
             return null;
         }
-        //TODO проверить последовательность
-        if (subTask.getStartTime() != null)
-            addPrioritizedTask(subTask);
+        addPrioritizedTask(subTask);
         epic.addSubTaskIdToList(subTask.getId());
         epic.setStatus(getUpdatedEpicStatus(epic));
         updateEpicTime(epic);
@@ -148,7 +145,10 @@ public class InMemoryTaskManager implements TaskManager {
     // 1) Задачи
     @Override
     public void removeTasks() {
-        allTasks.values().forEach(task -> historyManager.remove(task.getId()));
+        allTasks.values().forEach(task -> {
+            historyManager.remove(task.getId());
+            removePrioritizedTask(task);
+        });
         allTasks.clear();
     }
 
@@ -156,8 +156,10 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void removeEpics() {
         allEpics.values().forEach(epic -> historyManager.remove(epic.getId()));
-        allSubTasks.values().forEach(subTask -> historyManager.remove(subTask.getId()));
-
+        allSubTasks.values().forEach(subTask -> {
+            historyManager.remove(subTask.getId());
+            removePrioritizedTask(subTask);
+        });
         allEpics.clear();
         allSubTasks.clear();
     }
@@ -165,7 +167,10 @@ public class InMemoryTaskManager implements TaskManager {
     // 3) Подзадачи
     @Override
     public void removeSubTasks() {
-        allSubTasks.values().forEach(subTask -> historyManager.remove(subTask.getId()));
+        allSubTasks.values().forEach(subTask -> {
+            historyManager.remove(subTask.getId());
+            removePrioritizedTask(subTask);
+        });
         allSubTasks.clear();
         allEpics.values().forEach(epic -> {
             epic.getSubTasksIdList().clear();
@@ -182,6 +187,7 @@ public class InMemoryTaskManager implements TaskManager {
             return;
         }
         historyManager.remove(taskId);
+        removePrioritizedTask(allTasks.get(taskId));
         allTasks.remove(taskId);
     }
 
@@ -193,6 +199,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         Epic epic = allEpics.get(epicId);
         epic.getSubTasksIdList().forEach(subTaskId -> {
+            removePrioritizedTask(allSubTasks.get(subTaskId));
             allSubTasks.remove(subTaskId);
             historyManager.remove(subTaskId);
         });
@@ -211,6 +218,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         Epic epic = allEpics.get(subTask.getEpicId());
         epic.getSubTasksIdList().remove((Object) subTask.getId());
+        removePrioritizedTask(allSubTasks.get(subTaskId));
         allSubTasks.remove(subTaskId);
         historyManager.remove(subTask.getId());
         epic.setStatus(getUpdatedEpicStatus(epic));
@@ -304,6 +312,9 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     public void addPrioritizedTask(Task taskToAdd) {
+        if (taskToAdd.getStartTime() == null || taskToAdd.getDuration() == null) {
+            return;
+        }
         boolean isValid = getPrioritizedTasks()
                 .stream().filter(task -> isOverlapping(taskToAdd, task)).toList().isEmpty();
         if (isValid) {
@@ -312,9 +323,14 @@ public class InMemoryTaskManager implements TaskManager {
             // Как вариант, если мы все-таки хотим добавить задачу, то устанавливаем ей время начала,
             // соответствующее времени окончания последнего элемента в prioritizedTasks
             taskToAdd.setStartTime(prioritizedTasks.stream().toList().getLast().getEndTime());
+            taskToAdd.setStartTime(prioritizedTasks.stream().toList().getLast().getEndTime());
             prioritizedTasks.add(taskToAdd);
-            //TODO проверить на null
         }
+    }
+
+    protected void removePrioritizedTask(Task task) {
+        if ((task.getStartTime() != null && task.getDuration() != null))
+            prioritizedTasks.remove(task);
     }
 
     public boolean isOverlapping(Task task1, Task task2) {

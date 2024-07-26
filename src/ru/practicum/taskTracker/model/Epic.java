@@ -1,6 +1,5 @@
 package ru.practicum.taskTracker.model;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -21,12 +20,6 @@ public class Epic extends Task {
         this.setId(id);
     }
 
-    public Epic(int id, String name, String description, LocalDateTime startTime, Duration duration) {
-        super(name, description, startTime, duration);
-        this.endTime = super.getEndTime();
-        this.setId(id);
-    }
-
     public List<Integer> getSubTasksIdList() {
         return subTasksIdList;
     }
@@ -39,7 +32,6 @@ public class Epic extends Task {
         return type;
     }
 
-    @Override //TODO разница логики Task и Epic
     public LocalDateTime getEndTime() {
         return endTime;
     }
