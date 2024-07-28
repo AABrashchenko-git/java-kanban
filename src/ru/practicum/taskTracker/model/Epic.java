@@ -7,7 +7,6 @@ import java.util.List;
 
 public class Epic extends Task {
     private final List<Integer> subTasksIdList = new ArrayList<>();
-    private final Type type = Type.EPIC;
     private LocalDateTime endTime;
 
     public Epic(String name, String description) {
@@ -29,7 +28,7 @@ public class Epic extends Task {
     }
 
     public Type getType() {
-        return type;
+        return Type.EPIC;
     }
 
     public LocalDateTime getEndTime() {

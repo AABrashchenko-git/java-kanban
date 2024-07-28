@@ -10,7 +10,6 @@ public class Task {
     private String name;
     private String description;
     private Status status;
-    private final Type type = Type.TASK;
     private Duration duration;
     private LocalDateTime startTime;
 
@@ -85,7 +84,7 @@ public class Task {
     }
 
     public Type getType() {
-        return type;
+        return Type.TASK;
     }
 
     public Duration getDuration() {
@@ -97,7 +96,8 @@ public class Task {
     }
 
     public LocalDateTime getStartTime() {
-        return startTime;
+        if (startTime == null) return null;
+        return startTime.withSecond(0).withNano(0); // чтобы не сравнивать секунды и наносекунды
     }
 
     public void setStartTime(LocalDateTime startTime) {
@@ -105,6 +105,8 @@ public class Task {
     }
 
     public LocalDateTime getEndTime() {
+        if (startTime == null || duration == null)
+            return null;
         return startTime.plus(duration);
     }
 
@@ -113,11 +115,16 @@ public class Task {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return id == task.id;
+        if ((this.startTime == null || task.getStartTime() == null))
+            return id == task.id;
+        return id == task.id && Objects.equals(startTime.withSecond(0).withNano(0),
+                task.startTime.withSecond(0).withNano(0));
     }
 
     @Override
     public int hashCode() {
+        if (this.startTime != null)
+            return Objects.hash(id, startTime.withSecond(0).withNano(0));
         return Objects.hash(id);
     }
 

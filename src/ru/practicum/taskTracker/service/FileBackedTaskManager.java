@@ -240,13 +240,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 if (!isHistory) {
                     if (newTask instanceof SubTask) {
                         manager.allSubTasks.put(newTask.getId(), (SubTask) newTask);
-                        if (newTask.getStartTime() != null) manager.addPrioritizedTask(newTask);
+                        manager.addPrioritizedTask(newTask);
                     } else if (newTask instanceof Epic) {
                         Epic epic = (Epic) newTask;
                         manager.allEpics.put(epic.getId(), epic);
                     } else {
                         manager.allTasks.put(newTask.getId(), newTask);
-                        if (newTask.getStartTime() != null) manager.addPrioritizedTask(newTask);
+                        manager.addPrioritizedTask(newTask);
                     }
                 } else {
                     historyList.add(newTask);

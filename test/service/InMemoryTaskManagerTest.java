@@ -1,6 +1,7 @@
 package service;
 
 import org.junit.jupiter.api.*;
+import ru.practicum.taskTracker.exceptions.TaskManagerOverlappingException;
 import ru.practicum.taskTracker.model.*;
 import ru.practicum.taskTracker.service.InMemoryTaskManager;
 
@@ -30,7 +31,7 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
         subTask1 = new SubTask(epic1.getId(), "имяПодзадачи1Эпика",
                 "описаниеПодзадачи1Эпика1", LocalDateTime.now().plusMinutes(30), Duration.ofMinutes(20));
         subTask2 = new SubTask(epic1.getId(), "имяПодзадачи2Эпика",
-                "описаниеПодзадачи2Эпика1", LocalDateTime.now().plusMinutes(10), Duration.ofMinutes(40));
+                "описаниеПодзадачи2Эпика1", LocalDateTime.now().plusMinutes(51), Duration.ofMinutes(40));
         subTask3 = new SubTask(epic1.getId(), "имяПодзадачи3Эпика",
                 "описаниеПодзадачи1Эпика2");
         manager.addSubTask(subTask1);
@@ -96,6 +97,25 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
         for (Task subTaskInHistory : manager.getHistory()) {
             assertNotEquals(subTask1.getId(), subTaskInHistory.getId());
         }
+    }
+
+    @Test
+    void isOverlapping() {
+        // Время начала epic1.getStartTime = самой ранней подзадачи, epic1.getEndTime = время окончания самой поздней
+        assertEquals(epic1.getStartTime(), subTask1.getStartTime());
+        assertEquals(epic1.getEndTime(), subTask2.getEndTime());
+        // isOverlapping() теперь private, однако при наложении задач выбрасывается исключение
+        assertThrows(TaskManagerOverlappingException.class, () -> {
+            Task taskToTest = new Task("taskName", "testDescription",
+                    LocalDateTime.now().plusMinutes(5), Duration.ofMinutes(20));
+            manager.addPrioritizedTask(taskToTest);
+        }, "Файл не найден!");
+
+        assertDoesNotThrow(() -> {
+            SubTask subTask2 = new SubTask(epic1.getId(), "имяПодзадачи2Эпика",
+                    "описаниеПодзадачи2Эпика1", LocalDateTime.now().plusMinutes(100), Duration.ofMinutes(40));
+            manager.addSubTask(subTask2);
+        });
     }
 
 }

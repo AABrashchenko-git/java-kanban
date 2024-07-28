@@ -6,7 +6,6 @@ import java.time.format.DateTimeFormatter;
 
 public class SubTask extends Task {
     private int epicId;
-    private final Type type = Type.SUBTASK;
 
     public SubTask(int epicId, String name, String description) {
         super(name, description);
@@ -39,8 +38,9 @@ public class SubTask extends Task {
         this.epicId = epicId;
     }
 
+    @Override
     public Type getType() {
-        return type;
+        return Type.SUBTASK;
     }
 
     @Override

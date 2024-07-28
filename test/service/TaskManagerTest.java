@@ -7,8 +7,6 @@ import ru.practicum.taskTracker.model.SubTask;
 import ru.practicum.taskTracker.model.Task;
 import ru.practicum.taskTracker.service.TaskManager;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -148,40 +146,18 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     void getPrioritizedTasks() {
         // аккумулятор в reduce() будет возвращать null, если список не отсортирован
-        boolean isSortedByStartTime = (manager.getPrioritizedTasks().stream()
-                .reduce(null, (prev, curr) -> {
-                    if (prev == null || curr.getStartTime().isAfter(prev.getStartTime())) {
-                        return curr;
-                    } else {
+        boolean isSorted = manager.getPrioritizedTasks().stream()
+                .reduce((prev, curr) -> {
+                    if (prev.getStartTime() == null) {
+                        if (curr.getId() < prev.getId())
+                            return null;
+                    } else if (curr.getStartTime() != null && !curr.getStartTime().isAfter(prev.getStartTime())) {
                         return null;
                     }
-                }) != null);
-        assertTrue(isSortedByStartTime);
-    }
+                    return curr;
+                }).isPresent();
 
-    @Test
-    void isOverlapping() {
-        // Время начала epic1.getStartTime = самой ранней подзадачи, epic1.getEndTime = время окончания самой поздней
-        assertEquals(epic1.getStartTime(), subTask1.getStartTime());
-        assertEquals(epic1.getEndTime(), subTask2.getEndTime());
-
-        // Метод addPrioritizedTask добавляет задачу, если она пересекается, помещая её в конец списка приоритетных задач
-        // Поэтому они не будут пересекаться в любом случае
-        assertFalse(manager.isOverlapping(task1, subTask1));
-        assertFalse(manager.isOverlapping(task1, subTask2));
-        assertFalse(manager.isOverlapping(subTask1, subTask2));
-
-        // Чтобы проверить работу метода isOverlapping(), вернем изначально заданное время (перед добавлением)
-        task1.setStartTime(LocalDateTime.now());
-        task1.setDuration(Duration.ofMinutes(20));
-        subTask1.setStartTime(LocalDateTime.now().plusMinutes(30));
-        subTask1.setDuration(Duration.ofMinutes(20));
-        subTask2.setStartTime(LocalDateTime.now().plusMinutes(10));
-        subTask2.setDuration(Duration.ofMinutes(40));
-
-        assertFalse(manager.isOverlapping(task1, subTask1));
-        assertTrue(manager.isOverlapping(task1, subTask2));
-        assertTrue(manager.isOverlapping(subTask1, subTask2));
+        assertTrue(isSorted);
     }
 
     @Test

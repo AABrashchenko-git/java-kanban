@@ -17,7 +17,7 @@ public class Main {
         Task task2 = new Task("имяЗадачи2", "описаниеЗадачи2",
                 LocalDateTime.now(), Duration.ofMinutes(30));
         Task task3 = new Task("имяЗадачи3", "описаниеЗадачи3",
-                LocalDateTime.now().plusMinutes(31), Duration.ofMinutes(30));
+                LocalDateTime.now().plusMinutes(31), Duration.ofMinutes(29));
         manager.addTask(task1);
         manager.addTask(task2);
         manager.addTask(task3);
@@ -30,9 +30,9 @@ public class Main {
         SubTask subTask1 = new SubTask(epic1.getId(), "имяПодзадачи1Эпика1",
                 "описаниеПодзадачи1Эпика1");
         SubTask subTask2 = new SubTask(epic1.getId(), "имяПодзадачи2Эпика1",
-                "описаниеПодзадачи2Эпика1", LocalDateTime.now().plusMinutes(10), Duration.ofMinutes(90));
+                "описаниеПодзадачи2Эпика1", LocalDateTime.now().plusMinutes(61), Duration.ofMinutes(9));
         SubTask subTask3 = new SubTask(epic1.getId(), "имяПодзадачи3Эпика1",
-                "описаниеПодзадачи1Эпика2", LocalDateTime.now().plusMinutes(15), Duration.ofMinutes(60));
+                "описаниеПодзадачи1Эпика2", LocalDateTime.now().plusMinutes(71), Duration.ofMinutes(59));
         SubTask subTask4 = new SubTask(epic2.getId(), "имяПодзадачи1Эпика2",
                 "описаниеПодзадачи1Эпика2", LocalDateTime.now().plusMinutes(240), Duration.ofMinutes(60));
         manager.addSubTask(subTask1);
@@ -53,8 +53,9 @@ public class Main {
         manager.getSubTaskById(subTask1.getId());
 
         // Обновим подзадачу, чтобы после восстановления истории увидеть, что её статус(и её эпика) также сохранились
-        manager.updateSubTask(new SubTask(subTask1.getEpicId(), subTask1.getId(), "newИмяПодзадачи1Эпика1",
-                "newОписаниеПодзадачи1Эпика1", Status.DONE));
+        // Плюс увидим, что в списке приоритетных задач она заменила старую
+        manager.updateSubTask(new SubTask(subTask2.getEpicId(), subTask2.getId(), "newИмяПодзадачи2Эпика1",
+                "newОписаниеПодзадачи2Эпика1", Status.DONE, LocalDateTime.now().plusMinutes(61), Duration.ofMinutes(9)));
         manager.getSubTaskById(subTask1.getId());
 
         // 2. Создайте новый FileBackedTaskManager-менеджер из этого же файла.
@@ -100,10 +101,6 @@ public class Main {
         System.out.println("___________________________________");
         System.out.println(manager.getHistory());
 
-        // В ТЗ не было конкретики, что делать, если при добавлении задачи она пересекается с другими. Решил в методе
-        // addPrioritizedTask(Task taskToAdd) всё же добавлять её, помещая в самый конец списка задач по приоритету.
-        // То есть, если задача пересекается с другими - добавляем её после всех остальных с учетом длительности
-        // Если добавлять не нужно, убираем в данном методе блок else, тогда добавлены будут только задачи без пересечения
         System.out.println("\nЗадачи по приоритету исходного менеджера");
         System.out.println(manager.getPrioritizedTasks());
         System.out.println("\nЗадачи по приоритету восстановленного менеджера");
@@ -131,6 +128,10 @@ public class Main {
         // Увидим, что задачи заняли соответствующие интервалы во временной сетки
         System.out.println("\nВременная сетка не изменилась:");
         System.out.println(instantManager.getTimeAvailabilityGrid());
+
+        // Если попытаемся добавить новую задачу, пересекающуюся по времени, будет выброшено исключение
+        /*manager.addTask(new Task("timeName2", "timeDescription1",
+                LocalDateTime.now().plusMinutes(45), Duration.ofMinutes(95)));*/
     }
 
 }

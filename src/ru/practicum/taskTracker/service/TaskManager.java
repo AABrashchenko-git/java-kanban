@@ -59,5 +59,4 @@ public interface TaskManager {
 
     Optional<SubTask> getSubTaskByIdOptional(int subTaskId);
 
-    boolean isOverlapping(Task task1, Task task2);
 }

@@ -42,7 +42,7 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         subTask1 = new SubTask(epic1.getId(), "имяПодзадачи1Эпика",
                 "описаниеПодзадачи1Эпика1", LocalDateTime.now().plusMinutes(30), Duration.ofMinutes(20));
         subTask2 = new SubTask(epic1.getId(), "имяПодзадачи2Эпика",
-                "описаниеПодзадачи2Эпика1", LocalDateTime.now().plusMinutes(10), Duration.ofMinutes(40));
+                "описаниеПодзадачи2Эпика1", LocalDateTime.now().plusMinutes(51), Duration.ofMinutes(40));
         subTask3 = new SubTask(epic1.getId(), "имяПодзадачи3Эпика",
                 "описаниеПодзадачи1Эпика2");
         manager.addSubTask(subTask1);
@@ -81,7 +81,6 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
 
     @Test
     public void testException() {
-
         assertThrows(FileBackedTaskManagerInputException.class, () -> {
             File file1 = new File("nonExistingFile.txt");
             manager = FileBackedTaskManager.loadFromFile(file1);
