@@ -5,6 +5,9 @@ import ru.practicum.taskTracker.exceptions.FileBackedTaskManagerOutputException;
 import ru.practicum.taskTracker.model.*;
 
 import java.io.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -125,18 +128,24 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     // Метод сохранения задачи в строку
     public String toString(Task task) {
         StringBuilder taskToString = new StringBuilder(String.format("%s,%s,%s,%s,%s", task.getId(), task.getType(),
-                task.getStatus(), task.getName(), task.getDescription()));
-
+                task.getStatus(), task.getName(), task.getDescription())).append(",");
         switch (task.getType()) {
             case SUBTASK:
-                taskToString.append(",").append(((SubTask) task).getEpicId());
+                taskToString.append(((SubTask) task).getEpicId());
                 break;
             case EPIC:
-                taskToString.append(",");
+                if (((Epic) task).getSubTasksIdList().isEmpty())
+                    taskToString.append("st").append(0);
                 for (Integer subTaskId : ((Epic) task).getSubTasksIdList()) {
                     taskToString.append("st").append(subTaskId);
                 }
                 break;
+        }
+        if (task.getStartTime() != null && task.getDuration() != null) {
+            String startTime = task.getStartTime().format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"));
+            long duration = task.getDuration().toMinutes();
+
+            taskToString.append(",").append(startTime).append(",").append(duration);
         }
         return taskToString.append("\n").toString();
     }
@@ -176,23 +185,39 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         Status status = Status.valueOf(elements[2]);
         String name = elements[3];
         String description = elements[4];
-
+        LocalDateTime startTime = null;
+        Duration duration = null;
+        // Индикатор наличия полей, связанных с временем:
+        if (elements.length > 6) {
+            duration = Duration.ofMinutes(Long.parseLong(elements[elements.length - 1]));
+            startTime = LocalDateTime.parse(elements[elements.length - 2],
+                    DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"));
+        }
         switch (elements[1]) {
             case "SUBTASK":
                 int epicId = Integer.parseInt(elements[5]);
+                if (startTime != null && duration != null)
+                    return new SubTask(epicId, taskId, name, description, status, startTime, duration);
                 return new SubTask(epicId, taskId, name, description, status);
             case "EPIC":
                 Epic epic = new Epic(taskId, name, description);
                 epic.setStatus(status);
-                if (elements.length == 6) { // если у эпика существуют подзадачи
-                    elements[5] = elements[5].substring(2);
-                    String[] subTasks = elements[5].split("st");
+                elements[5] = elements[5].substring(2);
+                String[] subTasks = elements[5].split("st");
+                if (!subTasks[0].equals("0")) {
                     for (String string : subTasks) {
                         epic.getSubTasksIdList().add(Integer.parseInt(string));
                     }
                 }
+                if (startTime != null && duration != null) {
+                    epic.setStartTime(startTime);
+                    epic.setDuration(duration);
+                    epic.setEndTime(startTime.plus(duration));
+                }
                 return epic;
             default:
+                if (startTime != null && duration != null)
+                    return new Task(taskId, name, description, status, startTime, duration);
                 return new Task(taskId, name, description, status);
         }
     }
@@ -215,11 +240,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 if (!isHistory) {
                     if (newTask instanceof SubTask) {
                         manager.allSubTasks.put(newTask.getId(), (SubTask) newTask);
+                        manager.addPrioritizedTask(newTask);
                     } else if (newTask instanceof Epic) {
                         Epic epic = (Epic) newTask;
                         manager.allEpics.put(epic.getId(), epic);
                     } else {
                         manager.allTasks.put(newTask.getId(), newTask);
+                        manager.addPrioritizedTask(newTask);
                     }
                 } else {
                     historyList.add(newTask);

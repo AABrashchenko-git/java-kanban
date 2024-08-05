@@ -1,14 +1,13 @@
 package ru.practicum.taskTracker.model;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Epic extends Task {
-    // Ранее в ревью ты предлагал в классе Epic оставить либо список подзадач эпика, либо список ID сабтасок
-    // Сначала я оставил список сабтасок, но сейчас решил поменять на список id, легче реализовать восстановление истории
-    // Логику соответствующих методов, использующих список подзадач эпика, подправил
     private final List<Integer> subTasksIdList = new ArrayList<>();
-    private final Type type = Type.EPIC;
+    private LocalDateTime endTime;
 
     public Epic(String name, String description) {
         super(name, description);
@@ -29,11 +28,20 @@ public class Epic extends Task {
     }
 
     public Type getType() {
-        return type;
+        return Type.EPIC;
+    }
+
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 
     @Override
     public String toString() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
         StringBuilder subTaskInfo = new StringBuilder();
         StringBuilder epicInfo = new StringBuilder();
         if (subTasksIdList.isEmpty()) {
@@ -46,6 +54,10 @@ public class Epic extends Task {
         epicInfo.append("\b\b\n [ID эпика: ").append(this.getId()).append("; Имя эпика: ").append(this.getName());
         epicInfo.append(". Описание: ").append(this.getDescription());
         epicInfo.append(". Текущий статус: ").append(this.getStatus());
+        if (this.getStartTime() != null && this.getDuration() != null) {
+            epicInfo.append(", время начала эпика: ").append(this.getStartTime().format(formatter))
+                    .append(", время окончания эпика: ").append(this.getEndTime().format(formatter));
+        }
         epicInfo.append(". ID текущих подзадач: ").append(subTaskInfo).append("]");
         return epicInfo.toString();
     }

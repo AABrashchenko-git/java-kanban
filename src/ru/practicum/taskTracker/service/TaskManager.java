@@ -4,6 +4,8 @@ import ru.practicum.taskTracker.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 public interface TaskManager {
 
@@ -48,4 +50,13 @@ public interface TaskManager {
     int getNextId();
 
     List<Task> getHistory();
+
+    Set<Task> getPrioritizedTasks();
+
+    Optional<Task> getTaskByIdOptional(int taskId);
+
+    Optional<Epic> getEpicByIdOptional(int epicId);
+
+    Optional<SubTask> getSubTaskByIdOptional(int subTaskId);
+
 }

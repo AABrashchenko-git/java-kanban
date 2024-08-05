@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 import ru.practicum.taskTracker.model.Status;
 import ru.practicum.taskTracker.model.Task;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class TaskTest {
@@ -12,7 +15,8 @@ class TaskTest {
 
     @BeforeEach
     public void beforeEach() {
-        testTask = new Task("taskName", "testDescription");
+        testTask = new Task("taskName", "testDescription",
+                LocalDateTime.now(), Duration.ofMinutes(10));
     }
 
     @Test
