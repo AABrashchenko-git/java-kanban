@@ -1,6 +1,7 @@
 package ru.practicum.taskTracker.service;
 
 import ru.practicum.taskTracker.exceptions.TaskManagerOverlappingException;
+import ru.practicum.taskTracker.exceptions.TaskNotFoundException;
 import ru.practicum.taskTracker.model.*;
 
 import java.time.Duration;
@@ -40,13 +41,13 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public SubTask addSubTask(SubTask subTask) {
         subTask.setId(getNextId());
+        addPrioritizedTask(subTask);
         allSubTasks.put(subTask.getId(), subTask);
         int epicId = subTask.getEpicId();
         Epic epic = allEpics.get(epicId);
         if (epic == null) {
             return null;
         }
-        addPrioritizedTask(subTask);
         epic.addSubTaskIdToList(subTask.getId());
         epic.setStatus(getUpdatedEpicStatus(epic));
         updateEpicTime(epic);
@@ -104,8 +105,10 @@ public class InMemoryTaskManager implements TaskManager {
         // Добавляем задачу в историю
         if (task != null) {
             addToHistory(task);
+            return task;
+        } else {
+            throw new TaskNotFoundException("Task not found");
         }
-        return task;
     }
 
     // 2) Эпики
@@ -115,8 +118,10 @@ public class InMemoryTaskManager implements TaskManager {
         // Добавляем эпик в историю
         if (epic != null) {
             addToHistory(epic);
+            return epic;
+        } else {
+            throw new TaskNotFoundException("Task not found");
         }
-        return epic;
     }
 
     // 3) Подзадачи
@@ -125,8 +130,11 @@ public class InMemoryTaskManager implements TaskManager {
         SubTask subTask = allSubTasks.get(subTaskId);
         if (subTask != null) {
             addToHistory(subTask);
+            return subTask;
+        } else {
+            throw new TaskNotFoundException("SubTask not found");
         }
-        return subTask;
+
     }
 
     // a. Получение списка всех задач.
@@ -190,45 +198,47 @@ public class InMemoryTaskManager implements TaskManager {
     // 1) Задачи
     @Override
     public void removeOneTaskById(int taskId) {
-        if (!allTasks.containsKey(taskId)) {
-            return;
+        if (allTasks.containsKey(taskId)) {
+            historyManager.remove(taskId);
+            prioritizedTasks.remove(allTasks.get(taskId));
+            allTasks.remove(taskId);
+        } else {
+            throw new TaskNotFoundException("Task not found");
         }
-        historyManager.remove(taskId);
-        prioritizedTasks.remove(allTasks.get(taskId));
-        allTasks.remove(taskId);
     }
 
     // 2) Эпики
     @Override
     public void removeOneEpicById(int epicId) {
-        if (!allEpics.containsKey(epicId)) {
-            return;
+        if (allEpics.containsKey(epicId)) {
+            Epic epic = allEpics.remove(epicId);
+            epic.getSubTasksIdList().forEach(subTaskId -> {
+                prioritizedTasks.remove(allSubTasks.get(subTaskId));
+                allSubTasks.remove(subTaskId);
+                historyManager.remove(subTaskId);
+            });
+            epic.getSubTasksIdList().clear();
+            historyManager.remove(epic.getId());
+        } else {
+            throw new TaskNotFoundException("Task not found");
         }
-        Epic epic = allEpics.remove(epicId);
-        epic.getSubTasksIdList().forEach(subTaskId -> {
-            prioritizedTasks.remove(allSubTasks.get(subTaskId));
-            allSubTasks.remove(subTaskId);
-            historyManager.remove(subTaskId);
-        });
-
-        epic.getSubTasksIdList().clear();
-        historyManager.remove(epic.getId());
     }
 
     // 3) Подзадачи
     @Override
     public void removeOneSubTaskById(int subTaskId) {
         SubTask subTask = allSubTasks.get(subTaskId);
-        if (subTask == null) {
-            return;
+        if (subTask != null) {
+            Epic epic = allEpics.get(subTask.getEpicId());
+            epic.getSubTasksIdList().remove((Object) subTask.getId());
+            prioritizedTasks.remove(allSubTasks.get(subTaskId));
+            allSubTasks.remove(subTaskId);
+            historyManager.remove(subTask.getId());
+            epic.setStatus(getUpdatedEpicStatus(epic));
+            updateEpicTime(epic);
+        } else {
+            throw new TaskNotFoundException("Task not found");
         }
-        Epic epic = allEpics.get(subTask.getEpicId());
-        epic.getSubTasksIdList().remove((Object) subTask.getId());
-        prioritizedTasks.remove(allSubTasks.get(subTaskId));
-        allSubTasks.remove(subTaskId);
-        historyManager.remove(subTask.getId());
-        epic.setStatus(getUpdatedEpicStatus(epic));
-        updateEpicTime(epic);
     }
 
     // Получение всех подзадач эпика

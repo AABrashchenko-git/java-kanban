@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Epic extends Task {
-    private final List<Integer> subTasksIdList = new ArrayList<>();
+    private List<Integer> subTasksIdList = new ArrayList<>();
     private LocalDateTime endTime;
 
     public Epic(String name, String description) {
@@ -17,6 +17,7 @@ public class Epic extends Task {
     public Epic(int id, String name, String description) {
         super(name, description);
         this.setId(id);
+        subTasksIdList = new ArrayList<>();
     }
 
     public List<Integer> getSubTasksIdList() {
@@ -61,4 +62,5 @@ public class Epic extends Task {
         epicInfo.append(". ID текущих подзадач: ").append(subTaskInfo).append("]");
         return epicInfo.toString();
     }
+
 }
