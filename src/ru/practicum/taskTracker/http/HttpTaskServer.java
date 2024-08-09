@@ -11,14 +11,12 @@ import java.net.InetSocketAddress;
 public class HttpTaskServer {
     private TaskManager manager;
     private HttpServer httpServer;
-    private final int PORT = 8080;
-
     public HttpTaskServer(TaskManager manager) {
         this.manager = manager;
     }
 
     public void start() throws IOException {
-        httpServer = HttpServer.create(new InetSocketAddress(PORT), 0);
+        httpServer = HttpServer.create(new InetSocketAddress(8080), 0);
         httpServer.createContext("/tasks", new TaskHandler(manager));
         httpServer.createContext("/epics", new EpicHandler(manager));
         httpServer.createContext("/subtasks", new SubTaskHandler(manager));
@@ -30,6 +28,7 @@ public class HttpTaskServer {
     public void stop() {
         httpServer.stop(0);
     }
+
     // В ТЗ снова написано, что main поместить в этом классе, поэтому пока в класс Main переносить не стал)
     public static void main(String[] args) throws IOException {
         HttpTaskServer server = new HttpTaskServer(Managers.getFileBackedManager());
