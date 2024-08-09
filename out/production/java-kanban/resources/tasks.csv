@@ -1,3 +1,8 @@
-2,TASK,null,ТЕСТИМ222,ТЕСТИМ222,
-1,EPIC,NEW,ТЕСТИМ222,ТЕСТИМ222,st0
+1,TASK,NEW,Test Name,Test Description,,2024.08.09 18:55,5
+2,TASK,NEW,Test Name2,Test Description2,
+5,SUBTASK,NEW,Test Name,Test Description,3,2024.08.09 19:25,5
+6,SUBTASK,NEW,Test Name2,Test Description2,3
+7,SUBTASK,NEW,Test Name,Test Description,4,2024.08.09 19:05,10
+3,EPIC,NEW,Test Name,Test Description,st0
+4,EPIC,NEW,Test Name2,Test Description2,st0
 
