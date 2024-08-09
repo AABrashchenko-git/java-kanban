@@ -132,6 +132,9 @@ public class Main {
         // Если попытаемся добавить новую задачу, пересекающуюся по времени, будет выброшено исключение
         /*manager.addTask(new Task("timeName2", "timeDescription1",
                 LocalDateTime.now().plusMinutes(45), Duration.ofMinutes(95)));*/
+
+        System.out.println(newManager.getTaskById(task1.getId()));
+        System.out.println(newManager.getAllTasks());
     }
 
 }
