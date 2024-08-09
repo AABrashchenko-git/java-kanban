@@ -11,6 +11,7 @@ import java.net.InetSocketAddress;
 public class HttpTaskServer {
     private TaskManager manager;
     private HttpServer httpServer;
+
     public HttpTaskServer(TaskManager manager) {
         this.manager = manager;
     }
