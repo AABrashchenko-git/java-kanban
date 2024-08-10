@@ -13,14 +13,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-
 public class TaskHandler extends BaseHttpHandler implements HttpHandler {
     public TaskHandler(TaskManager manager) {
         super(manager);
     }
 
     @Override
-    public void handle(HttpExchange exchange) throws IOException {
+    public void handle(HttpExchange exchange) {
         try {
             String requestMethod = exchange.getRequestMethod();
             String[] pathParts = exchange.getRequestURI().getPath().split("/");
@@ -41,7 +40,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
         }
     }
 
-    private void handleGetOneTask(HttpExchange exchange) throws IOException {
+    private void handleGetOneTask(HttpExchange exchange) {
         Integer id = getIdFromRequest(exchange);
         Task task;
         if (id == null) {
@@ -57,9 +56,13 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
         }
     }
 
-    private void handleAddOrUpdateTask(HttpExchange exchange) throws IOException {
+    private void handleAddOrUpdateTask(HttpExchange exchange) {
         try (InputStream inputStream = exchange.getRequestBody()) {
             String jsonRequest = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+            if(jsonRequest.isEmpty()) {
+                sendText(exchange, "Bad Request", 400);
+                return;
+            }
             Task task = getGson().fromJson(jsonRequest, Task.class);
             if (task.getId() != 0) {
                 manager.updateTask(task);
@@ -71,15 +74,17 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
             }
         } catch (TaskManagerOverlappingException e) {
             sendHasInteractions(exchange);
+        } catch (IOException ioe) {
+            sendInternalServerError(exchange);
         }
     }
 
-    private void handleGetAllTasks(HttpExchange exchange) throws IOException {
+    private void handleGetAllTasks(HttpExchange exchange) {
         String response = getGson().toJson(manager.getAllTasks());
         sendText(exchange, response, 200);
     }
 
-    private void handleRemoveOneTask(HttpExchange exchange) throws IOException {
+    private void handleRemoveOneTask(HttpExchange exchange) {
         Integer id = getIdFromRequest(exchange);
         if (id != null) {
             try {
@@ -93,7 +98,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
         }
     }
 
-    private void handleRemoveAllTasks(HttpExchange exchange) throws IOException {
+    private void handleRemoveAllTasks(HttpExchange exchange) {
         manager.removeTasks();
         sendText(exchange, "Done", 200);
     }

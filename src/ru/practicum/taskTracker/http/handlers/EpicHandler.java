@@ -19,7 +19,7 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
     }
 
     @Override
-    public void handle(HttpExchange exchange) throws IOException {
+    public void handle(HttpExchange exchange) {
         try {
             String requestMethod = exchange.getRequestMethod();
             String[] pathParts = exchange.getRequestURI().getPath().split("/");
@@ -41,8 +41,7 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
         }
     }
 
-
-    private void handleGetOneEpic(HttpExchange exchange) throws IOException {
+    private void handleGetOneEpic(HttpExchange exchange) {
         Integer id = getIdFromRequest(exchange);
         Epic epic;
         if (id == null) {
@@ -58,10 +57,15 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
         }
     }
 
-    private void handleAddOrUpdateEpic(HttpExchange exchange) throws IOException {
+    private void handleAddOrUpdateEpic(HttpExchange exchange) {
         try (InputStream inputStream = exchange.getRequestBody()) {
             String jsonRequest = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-            Epic epic = getGson().fromJson(jsonRequest, Epic.class);
+            if (jsonRequest.isEmpty()) {
+                sendText(exchange, "Bad Request", 400);
+                return;
+            }
+            Epic epic = readEpic(exchange, jsonRequest);
+            //Epic epic = getGson().fromJson(jsonRequest, Epic.class);
             if (epic.getId() != 0) {
                 manager.updateEpic(epic);
                 sendText(exchange, "Done", 201);
@@ -69,46 +73,43 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
                 manager.addEpic(epic);
                 sendText(exchange, "Done", 201);
             }
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            System.out.println("error");
+        } catch (IOException e) {
+            sendInternalServerError(exchange);
         }
     }
 
-    private void handleGetAllEpics(HttpExchange exchange) throws IOException {
+    private void handleGetAllEpics(HttpExchange exchange) {
         String response = getGson().toJson(manager.getAllEpics());
         sendText(exchange, response, 200);
     }
 
-    private void handleRemoveOneEpic(HttpExchange exchange) throws IOException {
+    private void handleRemoveOneEpic(HttpExchange exchange) {
         Integer id = getIdFromRequest(exchange);
         if (id != null) {
             try {
                 manager.removeOneEpicById(id);
                 sendText(exchange, "Done", 200);
             } catch (TaskNotFoundException e) {
-                sendNotFound(exchange, "Task Not Found");
+                sendNotFound(exchange, "Epic Not Found");
             }
         } else {
-            sendNotFound(exchange, "Invalid task ID format");
+            sendNotFound(exchange, "Invalid Epic ID format");
         }
     }
 
-    private void handleRemoveAllEpics(HttpExchange exchange) throws IOException {
+    private void handleRemoveAllEpics(HttpExchange exchange) {
         manager.removeEpics();
         sendText(exchange, "Done", 200);
     }
 
-
-    public void handleGetEpicSubtasks(HttpExchange exchange) throws IOException {
+    public void handleGetEpicSubtasks(HttpExchange exchange) {
         Integer epicId = getIdFromRequest(exchange);
         if (epicId != null) {
             String response = getGson().toJson(manager.getAllSubTaskOfEpic(epicId));
             sendText(exchange, response, 200);
         } else {
-            sendNotFound(exchange, "Invalid task ID format");
+            sendNotFound(exchange, "Invalid Epic ID format");
         }
     }
-
 
 }

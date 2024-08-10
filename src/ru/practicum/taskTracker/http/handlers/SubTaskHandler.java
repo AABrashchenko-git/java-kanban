@@ -20,7 +20,7 @@ public class SubTaskHandler extends BaseHttpHandler implements HttpHandler {
     }
 
     @Override
-    public void handle(HttpExchange exchange) throws IOException {
+    public void handle(HttpExchange exchange) {
         try {
             String requestMethod = exchange.getRequestMethod();
             String[] pathParts = exchange.getRequestURI().getPath().split("/");
@@ -41,12 +41,11 @@ public class SubTaskHandler extends BaseHttpHandler implements HttpHandler {
         }
     }
 
-
-    private void handleGetOneSubTask(HttpExchange exchange) throws IOException {
+    private void handleGetOneSubTask(HttpExchange exchange) {
         Integer id = getIdFromRequest(exchange);
         SubTask subTask;
         if (id == null) {
-            sendNotFound(exchange, "Invalid task ID format");
+            sendNotFound(exchange, "Invalid subtask ID format");
             return;
         }
         try {
@@ -54,13 +53,17 @@ public class SubTaskHandler extends BaseHttpHandler implements HttpHandler {
             String response = getGson().toJson(subTask);
             sendText(exchange, response, 200);
         } catch (TaskNotFoundException e) {
-            sendNotFound(exchange, "Task Not Found");
+            sendNotFound(exchange, "Subtask Not Found");
         }
     }
 
-    private void handleAddOrUpdateSubTask(HttpExchange exchange) throws IOException {
+    private void handleAddOrUpdateSubTask(HttpExchange exchange) {
         try (InputStream inputStream = exchange.getRequestBody()) {
             String jsonRequest = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+            if (jsonRequest.isEmpty()) {
+                sendText(exchange, "Bad Request", 400);
+                return;
+            }
             SubTask subTask = getGson().fromJson(jsonRequest, SubTask.class);
             if (subTask.getId() != 0 && subTask.getEpicId() != 0) {
                 manager.updateSubTask(subTask);
@@ -71,34 +74,35 @@ public class SubTaskHandler extends BaseHttpHandler implements HttpHandler {
             } else {
                 sendNotFound(exchange, "Epic ID not identified");
             }
-        } catch (TaskManagerOverlappingException e) {
+        } catch (TaskManagerOverlappingException e1) {
             sendHasInteractions(exchange);
+        } catch (IOException e2) {
+            sendInternalServerError(exchange);
         }
     }
 
-    private void handleGetAllSubTasks(HttpExchange exchange) throws IOException {
+    private void handleGetAllSubTasks(HttpExchange exchange) {
         String response = getGson().toJson(manager.getAllSubTasks());
         sendText(exchange, response, 200);
     }
 
-    private void handleRemoveOneSubTask(HttpExchange exchange) throws IOException {
+    private void handleRemoveOneSubTask(HttpExchange exchange) {
         Integer id = getIdFromRequest(exchange);
         if (id != null) {
             try {
                 manager.removeOneSubTaskById(id);
                 sendText(exchange, "Done", 200);
             } catch (TaskNotFoundException e) {
-                sendNotFound(exchange, "Task Not Found");
+                sendNotFound(exchange, "Subtask Not Found");
             }
         } else {
-            sendNotFound(exchange, "Invalid task ID format");
+            sendNotFound(exchange, "Invalid subtask ID format");
         }
     }
 
-    private void handleRemoveAllSubTasks(HttpExchange exchange) throws IOException {
+    private void handleRemoveAllSubTasks(HttpExchange exchange) {
         manager.removeSubTasks();
         sendText(exchange, "Done", 200);
     }
-
 
 }

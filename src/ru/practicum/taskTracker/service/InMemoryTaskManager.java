@@ -120,7 +120,7 @@ public class InMemoryTaskManager implements TaskManager {
             addToHistory(epic);
             return epic;
         } else {
-            throw new TaskNotFoundException("Task not found");
+            throw new TaskNotFoundException("Epic not found");
         }
     }
 
@@ -220,7 +220,7 @@ public class InMemoryTaskManager implements TaskManager {
             epic.getSubTasksIdList().clear();
             historyManager.remove(epic.getId());
         } else {
-            throw new TaskNotFoundException("Task not found");
+            throw new TaskNotFoundException("Epic not found");
         }
     }
 
@@ -237,7 +237,7 @@ public class InMemoryTaskManager implements TaskManager {
             epic.setStatus(getUpdatedEpicStatus(epic));
             updateEpicTime(epic);
         } else {
-            throw new TaskNotFoundException("Task not found");
+            throw new TaskNotFoundException("Subtask not found");
         }
     }
 
