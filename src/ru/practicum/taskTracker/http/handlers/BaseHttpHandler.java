@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.sun.net.httpserver.HttpExchange;
+import ru.practicum.taskTracker.exceptions.HttpException;
 import ru.practicum.taskTracker.http.adapters.DurationAdapter;
 import ru.practicum.taskTracker.http.adapters.EpicDeserializer;
 import ru.practicum.taskTracker.http.adapters.LocalDateTimeAdapter;
@@ -30,8 +31,8 @@ class BaseHttpHandler {
             exchange.sendResponseHeaders(responseCode, resp.length);
             exchange.getResponseBody().write(resp);
             exchange.close();
-        } catch (IOException e) {
-            sendInternalServerError(exchange);
+        } catch (IOException ex) {
+            handleIOException(exchange, ex);
         }
     }
 
@@ -91,6 +92,20 @@ class BaseHttpHandler {
             sendInternalServerError(exchange);
         }
         return new Epic(id, name, description);
+    }
+
+    private void handleIOException(HttpExchange exchange, IOException e) {
+        e.printStackTrace();
+        try {
+            String errorMessage = "Internal Server Error";
+            byte[] resp = errorMessage.getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
+            exchange.sendResponseHeaders(500, resp.length);
+            exchange.getResponseBody().write(resp);
+            exchange.close();
+        } catch (IOException ex) {
+            throw new HttpException("Internal Server Error");
+        }
     }
 
 }
