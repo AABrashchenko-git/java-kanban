@@ -59,7 +59,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
     private void handleAddOrUpdateTask(HttpExchange exchange) {
         try (InputStream inputStream = exchange.getRequestBody()) {
             String jsonRequest = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-            if(jsonRequest.isEmpty()) {
+            if (jsonRequest.isEmpty()) {
                 sendText(exchange, "Bad Request", 400);
                 return;
             }
