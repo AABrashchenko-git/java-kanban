@@ -1,10 +1,14 @@
 package service;
 
 import org.junit.jupiter.api.*;
+import ru.practicum.taskTracker.exceptions.FileBackedTaskManagerInputException;
 import ru.practicum.taskTracker.exceptions.TaskManagerOverlappingException;
+import ru.practicum.taskTracker.exceptions.TaskNotFoundException;
 import ru.practicum.taskTracker.model.*;
+import ru.practicum.taskTracker.service.FileBackedTaskManager;
 import ru.practicum.taskTracker.service.InMemoryTaskManager;
 
+import java.io.File;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -85,9 +89,10 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
         assertEquals(1, manager.getHistory().size());
         manager.removeOneSubTaskById(subTask1.getId());
         // Проверяем, что после удаления задачи не существуют в списке подзадач
-        SubTask removedSubTask = manager.getSubTaskById(subTask1.getId());
-        assertNull(removedSubTask,
-                "Удаленную подзадачу можно получить по id!");
+        assertThrows(TaskNotFoundException.class, () -> {
+            manager.getSubTaskById(subTask1.getId());
+        }, "Задача все еще существует!");
+
         // Проверяем, что эпик больше не содержит неактуальную удаленную подзадачу
         manager.removeOneSubTaskById(subTask2.getId());
         manager.removeOneSubTaskById(subTask3.getId());

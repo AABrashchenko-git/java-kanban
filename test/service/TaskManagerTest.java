@@ -1,6 +1,7 @@
 package service;
 
 import org.junit.jupiter.api.Test;
+import ru.practicum.taskTracker.exceptions.TaskNotFoundException;
 import ru.practicum.taskTracker.model.Epic;
 import ru.practicum.taskTracker.model.Status;
 import ru.practicum.taskTracker.model.SubTask;
@@ -208,7 +209,9 @@ abstract class TaskManagerTest<T extends TaskManager> {
         assertNotNull(manager.getEpicById(epic1.getId()));
         assertNotNull(manager.getSubTaskById(subTask1.getId()));
         manager.removeOneEpicById(epic1.getId());
-        assertNull(manager.getSubTaskById(subTask1.getId()));
+        assertThrows(TaskNotFoundException.class, () -> {
+            manager.getSubTaskById(subTask1.getId());
+        }, "Задача все еще существует!");
     }
 
 }
